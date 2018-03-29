@@ -1,0 +1,13 @@
+# This is Git's per-user configuration file.
+[user]
+	name = kkawamura
+	email = kkawamura@logos.t.u-tokyo.ac.jp
+[core]
+	excludesfile = /home/kkawamura/.gitignore.d/.gitignore_global
+[merge]
+	ff = false
+[pull]
+	ff = only
+[push]
+	default = simple
+	recurseSubmodules = check
