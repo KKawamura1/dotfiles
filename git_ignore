@@ -1,0 +1,41 @@
+# global で効く gitignore
+# 参考: https://qiita.com/katsew/items/5cade12fa743a2f31f25
+#       https://github.com/github/gitignore
+
+# 全般
+*~
+.DS_Store
+
+# MSOffice
+~$*
+
+# emacs
+\#*\#
+.#*
+
+# elisp
+*.elc
+
+# サイズが重いもの
+*.dat
+*.data
+*.log
+
+# python
+__pycache__/
+.python-version
+
+# C系
+*.o
+*.out
+.clang-format
+
+# LaTeX
+*.aux
+*.blg
+*.dvi
+*.fdb_latexmk
+*.fls
+*.synctex.gz
+*.toc
+*.bbl
