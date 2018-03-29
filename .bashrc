@@ -258,7 +258,10 @@ alias diff='diff -U1'
 alias su='su -l' # don't use my env variables
 
 # emacs
-alias e='emacs -nw'
+alias emacs='emacs -nw'
+alias e='emacs'
+# ssh
+alias ssh='ssh -X'
 
 # auto ls
 autols(){
