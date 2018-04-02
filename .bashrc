@@ -262,6 +262,11 @@ alias emacs='emacs -nw'
 alias e='emacs'
 # ssh
 alias ssh='ssh -X'
+# cmake
+if [ -d ${LOCAL_HOME:-} ]; then
+    cmake_install_options=" -DCMAKE_INSTALL_PREFIX="${LOCAL_HOME}
+fi
+alias cmake='cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1'${cmake_install_options:-}
 
 # auto ls
 autols(){
