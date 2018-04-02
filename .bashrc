@@ -267,6 +267,7 @@ if [ -d ${LOCAL_HOME:-} ]; then
     cmake_install_options=" -DCMAKE_INSTALL_PREFIX="${LOCAL_HOME}"/tools/"
 fi
 alias cmake='cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1'${cmake_install_options:-}
+alias cmake_release='cmake -DCMAKE_BUILD_TYPE=Release'
 
 # auto ls
 autols(){
