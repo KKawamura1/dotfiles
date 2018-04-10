@@ -215,9 +215,10 @@ if [ ! $HOST_NAME == 'kiwi' ]; then
 	fi
     fi
     if expr ${mem_limit} : '[0-9]*' > /dev/null ; then
-	echo '.bashrc info: virtual memory is limited up to ['$((${mem_limit}/${giga}))' GB]'
+	echo '.bashrc info: Memory limitation is currently disabled.'
+	# echo '.bashrc info: virtual memory is limited up to ['$((${mem_limit}/${giga}))' GB]'
     fi
-    ulimit -S -v $mem_limit
+    # ulimit -S -v $mem_limit
 
     # pyenv settings
     if [ -d "${LOCAL_HOME}" ]; then
