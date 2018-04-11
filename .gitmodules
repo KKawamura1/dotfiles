@@ -1,3 +1,0 @@
-[submodule "config/mypy/numpy_stubs"]
-	path = config/mypy/stubs/numpy_stubs
-	url = https://github.com/numpy/numpy_stubs.git
