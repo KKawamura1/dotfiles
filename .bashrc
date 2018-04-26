@@ -278,7 +278,8 @@ autols(){
 export PROMPT_COMMAND="${PROMPT_COMMAND:-};autols"
 
 # その他pathを通す
-export MYPYPATH=${HOME}/.config/mypy/stubs/
+export PYTHONPATH=${HOME}/my-pylib/:${PYTHONPATH:-}
+export MYPYPATH=${HOME}/.config/mypy/stubs/:${PYTHONPATH}:${MYPYPATH:-}
 
 
 # if [ -n "$CPATH" ]; then export CPATH=:$CPATH; fi
