@@ -3,7 +3,7 @@
 # for examples
 
 # If not running interactively, don't do anything
-[ -z ${PS1:-} ] && return
+[ -z "${PS1:-}" ] && return
 
 # raise error when you use an undefined variable
 set -u
