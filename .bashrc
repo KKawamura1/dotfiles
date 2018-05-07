@@ -52,7 +52,7 @@ shopt -s checkwinsize
 #[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
 # set variable identifying the chroot you work in (used in the prompt below)
-if [ -z ${debian_chroot:-} ] && [ -r /etc/debian_chroot ]; then
+if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
     debian_chroot=$(cat /etc/debian_chroot)
 fi
 
@@ -97,7 +97,7 @@ export -f updatePrompt
 export PROMPT_COMMAND=${PROMPT_COMMAND:+${PROMPT_COMMAND};}'updatePrompt'
 
 # enable color support of ls and also add handy aliases
-if [ -x /usr/bin/dircolors ]; then
+if [ -x "/usr/bin/dircolors" ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
     alias ls='ls --color=auto'
     #alias dir='dir --color=auto'
@@ -119,14 +119,14 @@ fi
 # ~/.bash_aliases, instead of adding them here directly.
 # See /usr/share/doc/bash-doc/examples in the bash-doc package.
 
-if [ -f ~/.bash_aliases ]; then
+if [ -f "~/.bash_aliases" ]; then
     . ~/.bash_aliases
 fi
 
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
-if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
+if [ -f "/etc/bash_completion" ] && ! shopt -oq posix; then
     set +u
     . /etc/bash_completion
     set -u
@@ -141,25 +141,25 @@ fi
 # this is better:
 HOST_NAME=$(uname -n)
 # except kiwi
-if [ ! $HOST_NAME == 'kiwi' ]; then
+if [ ! "$HOST_NAME" == 'kiwi' ]; then
     # local home
     LOCAL_HOME='/data/local/kkawamura'
-    if [ ! -d ${LOCAL_HOME} ]; then
+    if [ ! -d "${LOCAL_HOME}" ]; then
 	mkdir ${LOCAL_HOME}
     fi
     # use cupy
     cupy_hosts=('crane0' 'crane2' 'owl0' 'owl1')
     cupy_mode=-1
     for host in ${cupy_hosts[@]}; do
-	if [ $HOST_NAME = $host ]; then
+	if [ "$HOST_NAME" = "$host" ]; then
             cupy_mode=0
 	fi
     done
-    if [ $cupy_mode -eq 0 ]; then
+    if [ "$cupy_mode" -eq 0 ]; then
 	# cuda のpathをとおす
 	# 参考: https://qiita.com/daichan1111/items/6ca75c688fff4cf14023
 	export CUDA_ROOT=/usr/local/cuda
-	if [ $HOST_NAME = 'owl1' ]; then
+	if [ "$HOST_NAME" = 'owl1' ]; then
 	    export CUDA_ROOT=/usr/local/cuda-8.0
 	fi
 	export CUDA_PATH=${CUDA_ROOT}
@@ -180,34 +180,34 @@ if [ ! $HOST_NAME == 'kiwi' ]; then
     mem_size='notset'
     division_num='notset'
     margin=$((${giga}))
-    if [ $HOST_NAME == 'crane0' ]; then
+    if [ "$HOST_NAME" == 'crane0' ]; then
 	mem_size=$((100*${giga}))
 	division_num=$((4))
 	margin=$((${giga}/2))
     fi
-    if [ $HOST_NAME == 'crane2' ]; then
+    if [ "$HOST_NAME" == 'crane2' ]; then
 	mem_size=$((100*${giga}))
 	division_num=$((4))
 	margin=$((${giga}/2))
     fi
-    if [ $HOST_NAME == 'pigeon0' ]; then
+    if [ "$HOST_NAME" == 'pigeon0' ]; then
 	mem_size=$((300*${giga}))
 	division_num=$((4))
     fi
-    if [ $HOST_NAME == 'pigeon1' ]; then
+    if [ "$HOST_NAME" == 'pigeon1' ]; then
 	mem_size=$((382*${giga}))
 	division_num=$((4))
     fi
-    if [ $HOST_NAME == 'owl0' ]; then
+    if [ "$HOST_NAME" == 'owl0' ]; then
 	mem_size=$((250*${giga}))
 	division_num=$((4))
     fi
-    if [ $HOST_NAME == 'owl1' ]; then
+    if [ "$HOST_NAME" == 'owl1' ]; then
 	mem_size=$((250*${giga}))
 	division_num=$((4))
     fi
-    if [ $mem_limit == 'notset' ]; then
-	if [ $mem_size == 'notset' ]; then
+    if [ "$mem_limit" == 'notset' ]; then
+	if [ "$mem_size" == 'notset' ]; then
 	    echo '.bashrc Warning: memory limitation is not set'
 	    mem_limit='unlimited'
 	else
@@ -264,7 +264,7 @@ alias e='emacs'
 # ssh
 alias ssh='ssh -X'
 # cmake
-if [ -d ${LOCAL_HOME:-} ]; then
+if [ -d "${LOCAL_HOME:-}" ]; then
     cmake_install_options=" -DCMAKE_INSTALL_PREFIX="${LOCAL_HOME}"/tools/"
 fi
 alias cmake='cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1'${cmake_install_options:-}
