@@ -1,3 +1,8 @@
+# Raise error when you use an undefined variable
+set -u
+# Halt shell scripts when an error occurs
+set -e
+
 # 変更を検知してコンパイル
 zshrc_source=${HOME}/.zshrc
 zshrc_compiled=${zshrc_source}.zwc
@@ -9,8 +14,8 @@ fi
 # 日本語を使用
 export LANG=ja_JP.UTF-8
 
-# パスを追加したい場合
-export PATH="/usr/local/bin:/usr/local/share/python/:$HOME/bin:$PATH"
+# add paths
+export PATH=/usr/local/bin:/usr/local/share/python/:${HOME}/bin:${PATH:-}
 
 # 色を使用
 autoload -Uz colors
@@ -157,20 +162,24 @@ function mkcd() {
 # cdの後にlsを実行
 chpwd() { la }
 
+# scpとかで*のワイルドカード展開が鬱陶しいときのために
+setopt nonomatch
+
+# 補完
+fpath=(/usr/local/share/zsh-completions ${fpath:-})
+# autoload -Uz compinit
+# compinit
+
+# end -u, -e
+set +ue
+
+# load outside files
+
 # zplug関連
 [ -f ~/.zshrc.zplug ] && source ~/.zshrc.zplug
 
 # vxs_info関連
 [ -f ~/.zshrc.vcsinfo ] && source ~/.zshrc.vcsinfo
-
-# scpとかで*のワイルドカード展開が鬱陶しいときのために
-setopt nonomatch
-
-# 補完
-fpath=(/usr/local/share/zsh-completions $fpath)
-# autoload -Uz compinit
-# compinit
-
 
 # ローカル設定
 # 環境依存な設定はここで設定したファイルに書く
