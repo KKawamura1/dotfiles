@@ -279,13 +279,20 @@ fi
 if [[ -n ${pyenv_root} ]]; then
     export PYENV_ROOT=${pyenv_root}
     if [ ! -d ${PYENV_ROOT} ]; then
-    	echo "Installing pyenv and pyenv-virtualenv..."
-    	git clone git://github.com/yyuu/pyenv.git ${PYENV_ROOT}
-    	git clone https://github.com/pyenv/pyenv-virtualenv.git ${PYENV_ROOT}/plugins/pyenv-virtualenv
+    	printf 'zshrc: [INFO] Installing pyenv and pyenv-virtualenv..'
+    	git clone 'git://github.com/yyuu/pyenv.git' ${PYENV_ROOT}
+	printf '.'
+    	git clone 'https://github.com/pyenv/pyenv-virtualenv.git' ${PYENV_ROOT}'/plugins/pyenv-virtualenv'
+	echo 'done.'
     fi
     export PATH=${PYENV_ROOT}/bin:$PATH
-    eval $(pyenv init -)
-    eval $(pyenv virtualenv-init -)
+    printf 'zshrc: [INFO] Execute pyenv-init..'
+    set +ue
+    eval "$(pyenv init -)"
+    printf '.'
+    eval "$(pyenv virtualenv-init -)"
+    set -ue
+    echo 'done.'
 fi
 
 # tmux color settings
@@ -295,22 +302,18 @@ export TERM="xterm-256color"
 # set other paths
 export MYPYPATH=${HOME}/.config/mypy/stubs/:${MYPYPATH:-}
 
-# end -u, -e
-set +ue
 
-# ----- end settings -----
-
-
-# ----- begin loading outside files -----
-
-# load outside files
-## zplug config
+# zplug config
+## if not exist, install zplug
 if [[ -n ${zplug_home} ]]; then
     if [[ ! -d ${zplug_home} ]]; then
-	echo 'zshrc: [INFO] install zplug... '
-	git clone https://github.com/zplug/zplug ${zplug_home}
+	printf 'zshrc: [INFO] Installing zplug...'
+	git clone 'https://github.com/zplug/zplug' ${zplug_home}
+	echo 'done.'
     fi
 fi
+## settings
+set +ue
 if [[ -d ${zplug_home} ]]; then
     export ZPLUG_HOME=${zplug_home}
     # load zplug
@@ -342,7 +345,19 @@ if [[ -d ${zplug_home} ]]; then
 else
     echo 'zshrc: [WARNING] Cannot find zplug_home in local config file. '
 fi
-# local rc
+set -ue
+
+
+# end -u, -e
+set +ue
+
+# ----- end settings -----
+
+
+# ----- begin loading outside files -----
+
+# load outside files
+## local rc
 local_source=${local_home:-${HOME}}/.zshrc.local
 if [[ -f ${local_source} ]]; then
     source ${local_source}
