@@ -305,6 +305,12 @@ set +ue
 
 # load outside files
 ## zplug config
+if [[ -n ${zplug_home} ]]; then
+    if [[ ! -d ${zplug_home} ]]; then
+	echo 'zshrc: [INFO] install zplug... '
+	git clone https://github.com/zplug/zplug ${zplug_home}
+    fi
+fi
 if [[ -d ${zplug_home} ]]; then
     export ZPLUG_HOME=${zplug_home}
     # load zplug
