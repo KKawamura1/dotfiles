@@ -152,7 +152,14 @@ alias mkdir='mkdir -p'
 alias ssh='ssh -X'
 ## human readable diff
 alias diff='diff -U1'
-
+## su without environment variables
+alias su='su -l'
+## cmake
+if [ -d ${usr_local} ]; then
+    cmake_install_options=' -DCMAKE_INSTALL_PREFIX='${usr_local}
+fi
+alias cmake='cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1'${cmake_install_options:-}
+alias cmake_release='cmake -DCMAKE_BUILD_TYPE=Release'
 
 # do ls after cd
 chpwd() { la }
@@ -263,7 +270,7 @@ fi
 
 # memory settings
 ## see: http://www.yukun.info/blog/2011/08/bash-if-num-str.html
-if expr ${mem_size} : '[0-9]+' > /dev/null ; then
+if expr ${mem_size:-'not'} : "[0-9]*" > /dev/null ; then
     echo 'zshrc: [INFO] Virtual memory is limited up to '${mem_size}'KB'
     ulimit -S -v ${mem_size}
 fi
