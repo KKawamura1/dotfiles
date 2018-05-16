@@ -1,3 +1,14 @@
+# =================
+# ----- zshrc -----
+# =================
+
+# If not running interactively, don't do anything
+## for ssh non-interactive shell
+## see: http://d.hatena.ne.jp/flying-foozy/20140130/1391096196
+[ -z "${PS1:-}" ] && return
+
+# ----- settings -----
+
 # raise error when you use an undefined variable
 set -u
 # halt shell scripts when an error occurs
@@ -20,14 +31,35 @@ if [[ ! -f ${config_path} ]]; then
 fi
 source ${config_path}
 ## local home path
-local_home=${local_home:-${HOME}}
-if [[ ! -d ${local_home} ]]; then
-    mkdir ${local_home}
+## type: path
+local_home=${local_home:-}
+if [[ ! -d ${local_home} && -n ${local_home} ]]; then
+    mkdir -p ${local_home}
+fi
+## local-config file in local-home
+config_path=${local_home:+${local_home}/.zshrc.config}
+if [[ -f ${config_path} ]]; then
+    source ${config_path}
 fi
 ## bin, lib, share, or others
+## type: path
 usr_local=${usr_local:-'/usr/local/'}
 ## zsh-completions
-zsh_completion_path=${zsh_completion_path:-'NOTSET'}
+## type: path
+zsh_completion_path=${zsh_completion_path:-}
+## zsh zplug
+## type: path
+zplug_home=${zplug_home:-}
+## cuda root
+## type: path
+cuda_root=${cuda_root:-}
+## pyenv root
+## type: path
+pyenv_root=${pyenv_root:-}
+## memory limitation
+## type: int (kbytes)
+mem_size=${mem_size:-}
+
 
 # use Japanese
 ## see: http://qiita.com/d-dai/items/d7f329b7d82e2165dab3
@@ -36,6 +68,7 @@ export LANG=ja_JP.UTF-8
 # add paths
 export PATH=${usr_local}/bin:${PATH:-}
 export LD_LIBRARY_PATH=${usr_local}/lib64:${usr_local}/lib:${LD_LIBRARY_PATH:-}
+export CPATH=${usr_local}/include:${CPATH:-}
 
 # use colors
 autoload -Uz colors
@@ -45,7 +78,7 @@ colors
 bindkey -e
 
 # set history files and max lines
-HISTFILE=${local_home}/.zsh_history
+HISTFILE=${local_home:-${HOME}}/.zsh_history
 HISTSIZE=10000
 SAVEHIST=10000
 
@@ -67,7 +100,7 @@ setopt histignorealldups
 setopt auto_cd
 ## paths that can be accessed from everywhere
 ## see: https://qiita.com/yaotti/items/157ff0a46736ec793a91
-cdpath=(~)
+cdpath=(${local_home:-} ${HOME})
 
 # automatically execute pushd
 setopt auto_pushd
@@ -210,24 +243,94 @@ setopt nonomatch
 
 # completions
 ## add zsh-completions
-if [[ ! ${zsh_completion_path} == 'NOTSET' ]]; then
+if [[ -d ${zsh_completion_path} ]]; then
     fpath=(${zsh_completion_path} ${fpath:-})
 fi
 ## load compinit
 autoload -Uz compinit
 compinit
 
+# cuda settings
+if [[ -d ${cuda_root} ]]; then
+    # set cuda path
+    # see: https://qiita.com/daichan1111/items/6ca75c688fff4cf14023
+    export CUDA_ROOT=${cuda_root}
+    export CUDA_PATH=${CUDA_ROOT}
+    export PATH=${CUDA_ROOT}/bin:${PATH}
+    export LD_LIBRARY_PATH=${CUDA_ROOT}/lib64:${CUDA_ROOT}/lib:${LD_LIBRARY_PATH}
+    export CPATH=${CUDA_ROOT}/include:${CPATH}
+fi
+
+# memory settings
+## see: http://www.yukun.info/blog/2011/08/bash-if-num-str.html
+if expr ${mem_size} : '[0-9]+' > /dev/null ; then
+    echo 'zshrc: [INFO] Virtual memory is limited up to '${mem_size}'KB'
+    ulimit -S -v ${mem_size}
+fi
+
+# pyenv settings
+if [[ -n ${pyenv_root} ]]; then
+    export PYENV_ROOT=${pyenv_root}
+    if [ ! -d ${PYENV_ROOT} ]; then
+    	echo "Installing pyenv and pyenv-virtualenv..."
+    	git clone git://github.com/yyuu/pyenv.git ${PYENV_ROOT}
+    	git clone https://github.com/pyenv/pyenv-virtualenv.git ${PYENV_ROOT}/plugins/pyenv-virtualenv
+    fi
+    export PATH=${PYENV_ROOT}/bin:$PATH
+    eval $(pyenv init -)
+    eval $(pyenv virtualenv-init -)
+fi
+
+# tmux color settings
+# see: https://github.com/sellout/emacs-color-theme-solarized/issues/62
+export TERM="xterm-256color"
+
+# set other paths
+export MYPYPATH=${HOME}/.config/mypy/stubs/:${MYPYPATH:-}
+
 # end -u, -e
 set +ue
 
+# ----- end settings -----
+
+
+# ----- begin loading outside files -----
+
 # load outside files
-
-# zplug関連
-[ -f ~/.zshrc.zplug ] && source ~/.zshrc.zplug
-
-# vxs_info関連
-# [ -f ~/.zshrc.vcsinfo ] && source ~/.zshrc.vcsinfo
-
-# ローカル設定
-# 環境依存な設定はここで設定したファイルに書く
-[ -f ~/.zshrc.local ] && source ~/.zshrc.local
+## zplug config
+if [[ -d ${zplug_home} ]]; then
+    export ZPLUG_HOME=${zplug_home}
+    # load zplug
+    source ${ZPLUG_HOME}/init.zsh
+    # load defalut plugins
+    zplug 'zplug/zplug'
+    zplug 'zsh-users/zsh-autosuggestions'
+    zplug 'nojhan/liquidprompt'
+    zplug 'zsh-users/zsh-syntax-highlighting'
+    if [[ -d ${zsh_completion_path} ]]; then
+	zplug 'zsh-users/zsh-completions'
+    fi
+    # load your zplug config
+    ## ex.
+    ## zplug "hoge/huga"
+    zplug_source=${local_home:-${HOME}}/.zshrc.zplug
+    if [[ -f ${zplug_source} ]]; then
+	source ${zplug_source}
+    fi
+    # auto install
+    if ! zplug check --verbose; then
+	printf 'Install? [y/N]: '
+	if read -q; then
+	    echo; zplug install
+	fi
+    fi
+    # load plugins
+    zplug load --verbose
+else
+    echo 'zshrc: [WARNING] Cannot find zplug_home in local config file. '
+fi
+# local rc
+local_source=${local_home:-${HOME}}/.zshrc.local
+if [[ -f ${local_source} ]]; then
+    source ${local_source}
+fi
