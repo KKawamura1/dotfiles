@@ -1,3 +1,10 @@
+# 変更を検知してコンパイル
+zshrc_source=${HOME}/.zshrc
+zshrc_compiled=${zshrc_source}.zwc
+if [ ! -f ${zshrc_compiled} -o ${zshrc_source} -nt ${zshrc_compiled} ]; then
+    zcompile ${zshrc_source}
+fi
+
 # 参考: http://qiita.com/d-dai/items/d7f329b7d82e2165dab3
 # 日本語を使用
 export LANG=ja_JP.UTF-8
