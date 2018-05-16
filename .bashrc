@@ -1,3 +1,12 @@
+# use zsh (cannot use chsh because it needs sudoers)
+if type zsh > /dev/null 2>&1; then
+    exec 'zsh'
+    # safe exit
+    return 2>&- || exit
+fi
+
+# ----------------------------------------------------
+
 # ~/.bashrc: executed by bash(1) for non-login shells.
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
