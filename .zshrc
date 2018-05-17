@@ -97,9 +97,10 @@ pyenv_root=${pyenv_root:-}
 mem_size=${mem_size:-}
 
 
-# use Japanese
-## see: http://qiita.com/d-dai/items/d7f329b7d82e2165dab3
-export LANG=ja_JP.UTF-8
+# use standart lang
+## see: https://eng-entrance.com/linux-localization-lang
+export LANG=C
+# export LANG=ja_JP.UTF-8
 
 # add paths
 export PATH=${usr_local}/bin:${PATH:-}
