@@ -14,18 +14,54 @@ set -u
 # halt shell scripts when an error occurs
 set -e
 
+# logger
+## main logger
+function logger_logging () {
+    # arg1
+    # log_level: str = 'NOTSET'
+    # level of the log. e.g. INFO or WARNING.
+    log_level=${1:-'NOTSET'}
+    # arg2
+    # message: str = ''
+    # main message of the log.
+    message=$2
+    # arg3
+    # continues: bool = false
+    # whether to open a new line or not at the end of the message.
+    # if true, continue the same line and not to open a new line.
+    continues=${3:-false}
+
+    message_line="zshrc: [${log_level}] "${message}
+    if ${continues}; then
+	printf ${message_line}'.'
+    else
+	echo ${message_line}
+    fi
+}
+## continue
+function logger_continue () {
+    printf '.'
+}
+## end continue
+function logger_finished () {
+    echo '. done.'
+}
+
+
 # compile when modified
 zshrc_source=${HOME}/.zshrc
 zshrc_compiled=${zshrc_source}.zwc
-if [[ ! -f ${zshrc_compiled} || ${zshrc_source} -nt ${zshrc_compiled} ]]; then
+if [[ ( ! -f ${zshrc_compiled} ) || ${zshrc_source} -nt ${zshrc_compiled} ]]; then
+    logger_logging 'INFO' 'compiling zshrc' true
     zcompile ${zshrc_source}
+    logger_finished
 fi
 
 # local configuration
 ## load local-config file
 config_path=${HOME}/.zshrc.config
 if [[ ! -f ${config_path} ]]; then
-    echo 'zshrc: [ERROR] Make your config file and place it in '${config_path}'!'
+    logger_logging 'ERROR' 'Make your config file and place it in '${config_path}'!'
     # safe exit
     return 2>&- || exit
 fi
@@ -230,12 +266,12 @@ alias zmv='noglob zmv -W'
 
 # do mkdir and cd
 function mkcd() {
-  if [[ -d ${1} ]]; then
-    echo ${1}' already exists!'
-    cd $1
-  else
-    mkdir -p $1 && cd $1
-  fi
+    if [[ -d ${1} ]]; then
+	logger_logging 'ERROR' 'directory'${1}' already exists.'
+	cd $1
+    else
+	mkdir -p $1 && cd $1
+    fi
 }
 
 # overwrite commands with coreutils
@@ -271,7 +307,7 @@ fi
 # memory settings
 ## see: http://www.yukun.info/blog/2011/08/bash-if-num-str.html
 if expr ${mem_size:-'not'} : "[0-9]*" > /dev/null ; then
-    echo 'zshrc: [INFO] Virtual memory is limited up to '${mem_size}'KB'
+    logger_logging 'INFO' 'Virtual memory is limited up to'${mem_size}'KB.'
     ulimit -S -v ${mem_size}
 fi
 
@@ -279,20 +315,22 @@ fi
 if [[ -n ${pyenv_root} ]]; then
     export PYENV_ROOT=${pyenv_root}
     if [ ! -d ${PYENV_ROOT} ]; then
-    	printf 'zshrc: [INFO] Installing pyenv and pyenv-virtualenv..'
+	logger_logging 'INFO' 'Installing pyenv and pyenv-virtualenv' true
     	git clone 'git://github.com/yyuu/pyenv.git' ${PYENV_ROOT}
-	printf '.'
+	logger_continue
     	git clone 'https://github.com/pyenv/pyenv-virtualenv.git' ${PYENV_ROOT}'/plugins/pyenv-virtualenv'
-	echo 'done.'
+	logger_finished
     fi
     export PATH=${PYENV_ROOT}/bin:$PATH
-    printf 'zshrc: [INFO] Execute pyenv-init..'
+    logger_logging 'INFO' 'Execute pyenv-init' true
     set +ue
+    logger_continue
     eval "$(pyenv init -)"
-    printf '.'
+    logger_continue
     eval "$(pyenv virtualenv-init -)"
+    logger_continue
     set -ue
-    echo 'done.'
+    logger_finished
 fi
 
 # tmux color settings
@@ -307,9 +345,9 @@ export MYPYPATH=${HOME}/.config/mypy/stubs/:${MYPYPATH:-}
 ## if not exist, install zplug
 if [[ -n ${zplug_home} ]]; then
     if [[ ! -d ${zplug_home} ]]; then
-	printf 'zshrc: [INFO] Installing zplug...'
+	logger_logging 'INFO' 'Installing zplug' true
 	git clone 'https://github.com/zplug/zplug' ${zplug_home}
-	echo 'done.'
+	logger_finished
     fi
 fi
 ## settings
@@ -343,7 +381,7 @@ if [[ -d ${zplug_home} ]]; then
     # load plugins
     zplug load --verbose
 else
-    echo 'zshrc: [WARNING] Cannot find zplug_home in local config file. '
+    logger_logging 'WARNING' 'Cannot find zplug_home in local config file.'
 fi
 set -ue
 
