@@ -3,11 +3,13 @@
 ## see: http://d.hatena.ne.jp/flying-foozy/20140130/1391096196
 ## also see: http://tyru.hatenablog.com/entry/20100104/do_not_exec_zsh_from_bashrc
 if [ -n "${PS1:-}" ]; then
-    # use zsh (cannot use chsh because it needs sudoers)
+    # use zsh (cannot use chsh because in LDAP environment you have to get sudo auth)
     if type 'zsh' > /dev/null 2>&1; then
 	zsh
 	# safe exit
 	return 2>&- || exit
+    else
+	echo 'bashrc: [FATAL] zsh not found! I want to use zsh instead of bash ;('
     fi
 fi
 
