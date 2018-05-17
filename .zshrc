@@ -99,7 +99,7 @@ mem_size=${mem_size:-}
 
 # use standart lang
 ## see: https://eng-entrance.com/linux-localization-lang
-export LANG=C
+export LANG=en_US.UTF-8
 # export LANG=ja_JP.UTF-8
 
 # add paths
