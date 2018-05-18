@@ -5,7 +5,7 @@
 if [ -n "${PS1:-}" ]; then
     # use zsh (cannot use chsh because in LDAP environment you have to get sudo auth)
     if type 'zsh' > /dev/null 2>&1; then
-	zsh
+	exec zsh
 	# safe exit
 	return 2>&- || exit
     else
