@@ -199,7 +199,44 @@ alias cmake='cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1'${cmake_install_options:-}
 alias cmake_release='cmake -DCMAKE_BUILD_TYPE=Release'
 
 # do ls after cd
-chpwd() { la }
+## abbreviate if there are lots of files
+## see: https://qiita.com/yuyuchu3333/items/b10542db482c3ac8b059
+chpwd() {
+    ls_abbrev
+}
+ls_abbrev() {
+    # -a : Do not ignore entries starting with '.'.
+    # -l : Long line format.
+    # -h : Human-readable file size.
+    local cmd_ls='ls'
+    local -a opt_ls
+    opt_ls=('-alh' '--color=always')
+    local -i print_line_num=5
+    case "${OSTYPE}" in
+        freebsd*|darwin*)
+            if type gls > /dev/null 2>&1; then
+                cmd_ls='gls'
+            else
+                # -G : Enable colorized output.
+                opt_ls=('-aCFG')
+            fi
+            ;;
+    esac
+
+    local ls_result
+    ls_result=$(CLICOLOR_FORCE=1 COLUMNS=$COLUMNS command $cmd_ls ${opt_ls[@]} | sed $'/^\e\[[0-9;]*m$/d')
+
+    local ls_lines=$(echo "$ls_result" | wc -l | tr -d ' ')
+
+    if [ $ls_lines -gt $((print_line_num*2 + 1)) ]; then
+        echo "$ls_result" | head -n $((print_line_num + 1))
+        echo '...'
+        echo "$ls_result" | tail -n ${print_line_num}
+        echo "$(command ls -1 -A | wc -l | tr -d ' ') files exist"
+    else
+        echo "$ls_result"
+    fi
+}
 
 # set chunk charactors
 ## see: https://gist.github.com/mollifier/4331a4db00a5555582e4
