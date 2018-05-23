@@ -195,8 +195,9 @@ alias su='su -l'
 if [ -d ${usr_local} ]; then
     cmake_install_options=' -DCMAKE_INSTALL_PREFIX='${usr_local}
 fi
-alias cmake='cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1'${cmake_install_options:-}
-alias cmake_release='cmake -DCMAKE_BUILD_TYPE=Release'
+alias cmake_export='cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1'${cmake_install_options:-}
+alias cmake_release='cmake_export -DCMAKE_BUILD_TYPE=Release'
+alias cmake_debug='cmake -DCMAKE_BUILD_TYPE=DEBUG'
 
 # do ls after cd
 ## abbreviate if there are lots of files
