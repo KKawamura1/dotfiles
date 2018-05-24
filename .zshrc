@@ -197,7 +197,7 @@ if [ -d ${usr_local} ]; then
 fi
 alias cmake_export='cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1'${cmake_install_options:-}
 alias cmake_release='cmake_export -DCMAKE_BUILD_TYPE=Release'
-alias cmake_debug='cmake -DCMAKE_BUILD_TYPE=DEBUG'
+alias cmake_debug='cmake -DCMAKE_BUILD_TYPE=Debug'
 
 # do ls after cd
 ## abbreviate if there are lots of files
