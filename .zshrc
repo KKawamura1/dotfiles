@@ -171,9 +171,6 @@ alias v='vim'
 alias vi='vim'
 ## cd
 alias c='cdr'
-alias ..='c ../'
-alias ...='c ../../'
-alias ....='c ../../../'
 alias back='pushd'
 ## tmux
 alias t='tmux'
