@@ -209,7 +209,7 @@ ls_abbrev() {
     local cmd_ls='ls'
     local -a opt_ls
     opt_ls=('-alh' '--color=always')
-    local -i print_line_num=5
+    local -i print_line_num=8
     case "${OSTYPE}" in
         freebsd*|darwin*)
             if type gls > /dev/null 2>&1; then
