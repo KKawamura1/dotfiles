@@ -347,6 +347,9 @@ if expr ${mem_size:-'not'} : "[0-9]*" > /dev/null ; then
     ulimit -S -v ${mem_size}
 fi
 
+# core dump settings
+ulimit -c 'unlimited'
+
 # pyenv settings
 if [[ -n ${pyenv_root} ]]; then
     export PYENV_ROOT=${pyenv_root}
