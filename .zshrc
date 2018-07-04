@@ -105,6 +105,7 @@ export LANG=en_US.UTF-8
 # add paths
 export PATH=${usr_local}/bin:${PATH:-}
 export LD_LIBRARY_PATH=${usr_local}/lib64:${usr_local}/lib:${LD_LIBRARY_PATH:-}
+export LIBRARY_PATH=${usr_local}/lib64:${usr_local}/lib:${LIBRARY_PATH:-}
 export CPATH=${usr_local}/include:${CPATH:-}
 
 # use colors
@@ -147,6 +148,9 @@ setopt pushd_ignore_dups
 
 # correct command typo
 setopt correct
+
+# auto complete --prefix=/hoge/fug| <= tab
+setopt magic_equal_subst
 
 
 # global aliases
