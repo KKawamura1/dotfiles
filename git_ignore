@@ -16,6 +16,9 @@
 # elisp
 *.elc
 
+# vscode
+.vscode/
+
 # サイズが重いもの
 *.dat
 *.data
