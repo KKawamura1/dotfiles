@@ -42,6 +42,12 @@ __pycache__/
 *.synctex.gz
 *.toc
 *.bbl
+__latexindent_*
+
+# mypy
+dmypy.json
+.dmypy.json
+dmypy.sock
 
 # .idea directories
 # from http://gihyo.jp/dev/serial/01/android_studio/0035
