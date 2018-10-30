@@ -79,7 +79,7 @@ if [[ -f ${config_path} ]]; then
 fi
 ## bin, lib, share, or others
 ## type: path
-usr_local=${usr_local:-'/usr/local/'}
+usr_local=${usr_local:-'/usr/local'}
 ## zsh-completions
 ## type: path
 zsh_completion_path=${zsh_completion_path:-}
@@ -107,6 +107,15 @@ export PATH=${usr_local}/bin:${PATH:-}
 export LD_LIBRARY_PATH=${usr_local}/lib64:${usr_local}/lib:${LD_LIBRARY_PATH:-}
 export LIBRARY_PATH=${usr_local}/lib64:${usr_local}/lib:${LIBRARY_PATH:-}
 export CPATH=${usr_local}/include:${CPATH:-}
+
+# add Python paths
+if [[ -n $local_home ]]; then
+    python_path_dir=${local_home}/python_modules/
+    if [[ ! -d ${python_path_dir} ]]; then
+        mkdir ${python_path_dir}
+    fi
+    export PYTHONPATH=${python_path_dir}:${PYTHONPATH:-}
+fi
 
 # use colors
 autoload -Uz colors
