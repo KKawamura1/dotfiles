@@ -42,6 +42,8 @@ __pycache__/
 *.synctex.gz
 *.toc
 *.bbl
+*.lot
+*.lof
 __latexindent_*
 
 # mypy
