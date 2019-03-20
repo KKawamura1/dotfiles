@@ -34,9 +34,9 @@ logger_logging () {
 
     message_line="zshrc: [${log_level}] "${message}
     if ${continues}; then
-	printf ${message_line}'.'
+    	printf ${message_line}'.'
     else
-	echo ${message_line}
+	    echo ${message_line}
     fi
 }
 ## Continue
@@ -65,6 +65,7 @@ fi
 
 # Local configuration
 ## Load local-config file
+## Local-config file should contain some environment variables shown below
 config_path=${HOME}/.zshrc.config
 if [[ ! -f ${config_path} ]]; then
     logger_logging 'ERROR' 'Make your config file and place it in '${config_path}'!'
@@ -72,34 +73,52 @@ if [[ ! -f ${config_path} ]]; then
     return 2>&- || exit
 fi
 source ${config_path}
-## Local home path
+# Local home path
+## We use this path instead of ${HOME} for who wants to use different path from ${HOME}
 ## Type: path
-local_home=${local_home:-}
-if [[ ! -d ${local_home} && -n ${local_home} ]]; then
+## Default: ${HOME}
+local_home=${local_home:-${HOME}}
+if [[ ${local_home} != ${HOME} && ! -d ${local_home} ]]; then
     mkdir -p ${local_home}
 fi
-## Local-config file in local-home
+## Re-read local config file in local home
 config_path=${local_home:+${local_home}/.zshrc.config}
 if [[ -f ${config_path} ]]; then
     source ${config_path}
 fi
-## Bin, lib, share, or others
+# Bin, lib, share, or others
+## We use this path instead of /usr/local
 ## Type: path
+## Default: "/usr/local"
 usr_local=${usr_local:-'/usr/local'}
-## Zsh-completions
+# Zsh-completions
+## Path to the installed zsh-completions (https://github.com/zsh-users/zsh-completions), which enhances the auto completion systems on zsh
 ## Type: path
+## Default: None
 zsh_completion_path=${zsh_completion_path:-}
-## Zsh zplug
+# Zsh zplug
+## Path to the zplug (if not installed there, we automatically install it)
 ## Type: path
+## Default: None
+## Example: "${local_home}/zplug"
 zplug_home=${zplug_home:-}
-## Cuda root
+# Cuda root
+## Path to the cuda (if not installed, then the behaviour is not supported)
 ## Type: path
+## Default: None
+## Example: "${usr_local}/cuda"
 cuda_root=${cuda_root:-}
-## Pyenv root
+# Pyenv root
+## Path to the pyenv (if not installed there, we automatically install it)
 ## Type: path
+## Default: None
+## Example: "${local_home}/.pyenv"
 pyenv_root=${pyenv_root:-}
-## Memory limitation
+# Memory limitation
+## If set, we restrict the memoty usage
 ## Type: int (kbytes)
+## Default: None
+## Example: 104857600
 mem_size=${mem_size:-}
 
 
@@ -108,22 +127,13 @@ mem_size=${mem_size:-}
 # Use standart lang
 ## See: https://eng-entrance.com/linux-localization-lang
 export LANG=en_US.UTF-8
-# Export LANG=ja_JP.UTF-8
+# export LANG=ja_JP.UTF-8
 
 # Add paths
 export PATH=${usr_local}/bin:${PATH:-}
 export LD_LIBRARY_PATH=${usr_local}/lib:${LD_LIBRARY_PATH:-}
 export LIBRARY_PATH=${usr_local}/lib:${LIBRARY_PATH:-}
 export CPATH=${usr_local}/include:${CPATH:-}
-
-# Add Python paths
-if [[ -n $local_home ]]; then
-    python_path_dir=${local_home}/python_modules/
-    if [[ ! -d ${python_path_dir} ]]; then
-        mkdir ${python_path_dir}
-    fi
-    export PYTHONPATH=${python_path_dir}:${PYTHONPATH:-}
-fi
 
 # Cuda settings
 if [[ -d ${cuda_root} ]]; then
@@ -441,7 +451,7 @@ if [[ -d ${zplug_home} ]]; then
     zplug 'nojhan/liquidprompt'
     zplug 'zsh-users/zsh-syntax-highlighting'
     if [[ -d ${zsh_completion_path} ]]; then
-	zplug 'zsh-users/zsh-completions'
+	    zplug 'zsh-users/zsh-completions'
     fi
     # Load your zplug config
     ## Ex.
@@ -469,6 +479,9 @@ set -ue
 
 # End -u, -e
 set +ue
+
+# Remove local functions
+unset -f logger_logging logger_continue logger_finished
 
 
 # ----- Local & outside configurations -----
