@@ -322,24 +322,6 @@ zstyle ':zle:*' word-style unspecified
 ## See: http://blog.mkt-sys.jp/2014/06/fix-zsh-env.html
 setopt no_flow_control
 
-# Set prompt
-## Deprecated; use liquidprompt instead
-# PROMPT="%(?.%{${fg[green]}%}.%{${fg[red]}%})%n${reset_color}@${fg[blue]}%m${reset_color}(%*%) %~
-#%# "
-# Git
-#RPROMPT="%{${fg[blue]}%}[%~]%{${reset_color}%}"
-#autoload -Uz vcs_info
-#setopt prompt_subst
-#zstyle ':vcs_info:git:*' check-for-changes true
-#zstyle ':vcs_info:git:*' stagedstr "%F{yellow}!"
-#zstyle ':vcs_info:git:*' unstagedstr "%F{red}+"
-#zstyle ':vcs_info:*' formats "%F{green}%c%u[%b]%f"
-#zstyle ':vcs_info:*' actionformats '[%b|%a]'
-#precmd () { vcs_info }
-#RPROMPT=$RPROMPT'${vcs_info_msg_0_}'
-# See: http://www.yoheim.net/blog.php?q=20140309
-# Export PS1="\u: \w $" # User-name: directory-name $
-
 # Move with <- and -> keys after TAB completion
 zstyle ':completion:*:default' menu select=2
 
