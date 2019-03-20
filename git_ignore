@@ -32,6 +32,8 @@ __pycache__/
 # C系
 *.o
 *.out
+*.gch
+.clang-format
 
 # LaTeX
 *.aux
