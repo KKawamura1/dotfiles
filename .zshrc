@@ -7,24 +7,17 @@
 ## see: http://d.hatena.ne.jp/flying-foozy/20140130/1391096196
 [ -z "${PS1:-}" ] && return
 
-# Whether this file is already loaded or not
-# See: http://blog.aqutras.com/entry/2016/05/12/210000
-if [ -z $ZSH_ENV_LOADED ]; then
-    export ZSH_ENV_LOADED=false
-else
-    export ZSH_ENV_LOADED=true
-fi
-
-# ----- settings -----
-
 # raise error when you use an undefined variable
 set -u
 # halt shell scripts when an error occurs
 set -e
 
+
+# ----- Local functions -----
+
 # logger
 ## main logger
-function logger_logging () {
+logger_logging () {
     # arg1
     # log_level: str = 'NOTSET'
     # level of the log. e.g. INFO or WARNING.
@@ -47,14 +40,16 @@ function logger_logging () {
     fi
 }
 ## continue
-function logger_continue () {
+logger_continue () {
     printf '.'
 }
 ## end continue
-function logger_finished () {
+logger_finished () {
     echo '. done.'
 }
 
+
+# ----- First-of-all setups -----
 
 # compile when modified
 zshrc_source=${HOME}/.zshrc
@@ -64,6 +59,9 @@ if [[ ( ! -f ${zshrc_compiled} ) || ${zshrc_source} -nt ${zshrc_compiled} ]]; th
     zcompile ${zshrc_source}
     logger_finished
 fi
+
+
+# ----- Read environment settings -----
 
 # local configuration
 ## load local-config file
@@ -104,100 +102,59 @@ pyenv_root=${pyenv_root:-}
 ## type: int (kbytes)
 mem_size=${mem_size:-}
 
-# Export variables
-## Not to export when load twice (often written in .zsh_profile)
-if ! $ZSH_ENV_LOADED; then
-    # use standart lang
-    ## see: https://eng-entrance.com/linux-localization-lang
-    export LANG=en_US.UTF-8
-    # export LANG=ja_JP.UTF-8
 
-    # add paths
-    export PATH=${usr_local}/bin:${PATH:-}
-    export LD_LIBRARY_PATH=${usr_local}/lib:${LD_LIBRARY_PATH:-}
-    export LIBRARY_PATH=${usr_local}/lib:${LIBRARY_PATH:-}
-    export CPATH=${usr_local}/include:${CPATH:-}
+# ----- Export variables -----
 
-    # add Python paths
-    if [[ -n $local_home ]]; then
-        python_path_dir=${local_home}/python_modules/
-        if [[ ! -d ${python_path_dir} ]]; then
-            mkdir ${python_path_dir}
-        fi
-        export PYTHONPATH=${python_path_dir}:${PYTHONPATH:-}
+# use standart lang
+## see: https://eng-entrance.com/linux-localization-lang
+export LANG=en_US.UTF-8
+# export LANG=ja_JP.UTF-8
+
+# add paths
+export PATH=${usr_local}/bin:${PATH:-}
+export LD_LIBRARY_PATH=${usr_local}/lib:${LD_LIBRARY_PATH:-}
+export LIBRARY_PATH=${usr_local}/lib:${LIBRARY_PATH:-}
+export CPATH=${usr_local}/include:${CPATH:-}
+
+# add Python paths
+if [[ -n $local_home ]]; then
+    python_path_dir=${local_home}/python_modules/
+    if [[ ! -d ${python_path_dir} ]]; then
+        mkdir ${python_path_dir}
     fi
-
-    # cuda settings
-    if [[ -d ${cuda_root} ]]; then
-        # set cuda path
-        # see: https://qiita.com/daichan1111/items/6ca75c688fff4cf14023
-        export CUDA_ROOT=${cuda_root}
-        export CUDA_PATH=${CUDA_ROOT}
-        export PATH=${CUDA_ROOT}/bin:${PATH}
-        export LD_LIBRARY_PATH=${CUDA_ROOT}/lib64:${CUDA_ROOT}/lib:${LD_LIBRARY_PATH}
-        export CPATH=${CUDA_ROOT}/include:${CPATH}
-    fi
-
-    # overwrite commands with coreutils
-    ## see: http://qiita.com/catatsuy/items/50b339ead2571fd3f628
-    if [[ $(uname) == 'Darwin' ]]; then
-        export PATH=${usr_local}/opt/coreutils/libexec/gnubin:${PATH:-}
-        export MANPATH=${usr_local}/opt/coreutils/libexec/gnuman:${MANPATH:-}
-    fi
-
-    # tmux color settings
-    # see: https://github.com/sellout/emacs-color-theme-solarized/issues/62
-    export TERM="xterm-256color"
-
-    # fix directory stack size
-    export DIRSTACKSIZE=100
-
-    # set other paths
-    export MYPYPATH=${HOME}/.config/mypy/stubs/:${MYPYPATH:-}
-
+    export PYTHONPATH=${python_path_dir}:${PYTHONPATH:-}
 fi
 
-# use colors
-autoload -Uz colors
-colors
+# cuda settings
+if [[ -d ${cuda_root} ]]; then
+    # set cuda path
+    # see: https://qiita.com/daichan1111/items/6ca75c688fff4cf14023
+    export CUDA_ROOT=${cuda_root}
+    export CUDA_PATH=${CUDA_ROOT}
+    export PATH=${CUDA_ROOT}/bin:${PATH}
+    export LD_LIBRARY_PATH=${CUDA_ROOT}/lib64:${CUDA_ROOT}/lib:${LD_LIBRARY_PATH}
+    export CPATH=${CUDA_ROOT}/include:${CPATH}
+fi
 
-# emacs key bind
-bindkey -e
+# overwrite commands with coreutils
+## see: http://qiita.com/catatsuy/items/50b339ead2571fd3f628
+if [[ $(uname) == 'Darwin' ]]; then
+    export PATH=${usr_local}/opt/coreutils/libexec/gnubin:${PATH:-}
+    export MANPATH=${usr_local}/opt/coreutils/libexec/gnuman:${MANPATH:-}
+fi
 
-# set history files and max lines
-HISTFILE=${local_home:-${HOME}}/.zsh_history
-HISTSIZE=10000
-SAVEHIST=10000
+# tmux color settings
+# see: https://github.com/sellout/emacs-color-theme-solarized/issues/62
+export TERM="xterm-256color"
 
-# enable add-zsh-hook
-## usage: add-zsh-hook trigger-func execute-func
-## see: https://qiita.com/mollifier/items/558712f1a93ee07e22e2
-autoload -Uz add-zsh-hook
+# fix directory stack size
+export DIRSTACKSIZE=100
 
-# share histories with other terminals
-setopt share_history
+# set other paths
+export MYPYPATH=${HOME}/.config/mypy/stubs/:${MYPYPATH:-}
 
-# ignore duplicated histories
-setopt histignorealldups
 
-# change directory without cd command
-setopt auto_cd
-## paths that can be accessed from everywhere
-## see: https://qiita.com/yaotti/items/157ff0a46736ec793a91
-cdpath=(${local_home:-} ${HOME})
-
-# automatically execute pushd
-setopt auto_pushd
-
-# ignore duplicated pushd histories
-setopt pushd_ignore_dups
-
-# correct command typo
-setopt correct
-
-# auto complete --prefix=/hoge/fug| <= tab
-setopt magic_equal_subst
-
+# ----- Aliases -----
 
 # global aliases
 alias -g L='| less'
@@ -246,6 +203,9 @@ alias cmake_export='cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1'${cmake_install_opti
 alias cmake_release='cmake_export -DCMAKE_BUILD_TYPE=Release'
 alias cmake_debug='cmake -DCMAKE_BUILD_TYPE=Debug'
 
+
+# ----- Useful function commands -----
+
 # do ls after cd
 ## abbreviate if there are lots of files
 ## see: https://qiita.com/yuyuchu3333/items/b10542db482c3ac8b059
@@ -285,6 +245,60 @@ ls_abbrev() {
         echo "$ls_result"
     fi
 }
+
+# do mkdir and cd
+function mkcd() {
+    if [[ -d ${1} ]]; then
+	logger_logging 'ERROR' 'directory'${1}' already exists.'
+	cd $1
+    else
+	mkdir -p $1 && cd $1
+    fi
+}
+
+
+# ----- Zsh-specific settings -----
+
+# use colors
+autoload -Uz colors
+colors
+
+# emacs key bind
+bindkey -e
+
+# set history files and max lines
+HISTFILE=${local_home:-${HOME}}/.zsh_history
+HISTSIZE=10000
+SAVEHIST=10000
+
+# enable add-zsh-hook
+## usage: add-zsh-hook trigger-func execute-func
+## see: https://qiita.com/mollifier/items/558712f1a93ee07e22e2
+autoload -Uz add-zsh-hook
+
+# share histories with other terminals
+setopt share_history
+
+# ignore duplicated histories
+setopt histignorealldups
+
+# change directory without cd command
+setopt auto_cd
+## paths that can be accessed from everywhere
+## see: https://qiita.com/yaotti/items/157ff0a46736ec793a91
+cdpath=(${local_home:-} ${HOME})
+
+# automatically execute pushd
+setopt auto_pushd
+
+# ignore duplicated pushd histories
+setopt pushd_ignore_dups
+
+# correct command typo
+setopt correct
+
+# auto complete --prefix=/hoge/fug| <= tab
+setopt magic_equal_subst
 
 # set chunk charactors
 ## see: https://gist.github.com/mollifier/4331a4db00a5555582e4
@@ -350,16 +364,6 @@ zstyle ":chpwd:*" recent-dirs-default true
 autoload -Uz zmv
 alias zmv='noglob zmv -W'
 
-# do mkdir and cd
-function mkcd() {
-    if [[ -d ${1} ]]; then
-	logger_logging 'ERROR' 'directory'${1}' already exists.'
-	cd $1
-    else
-	mkdir -p $1 && cd $1
-    fi
-}
-
 # disable wildcard expansion (for like scp)
 setopt nonomatch
 
@@ -372,6 +376,9 @@ fi
 autoload -Uz compinit
 compinit
 
+
+# ----- Memory limitation -----
+
 # memory settings
 ## see: http://www.yukun.info/blog/2011/08/bash-if-num-str.html
 if expr ${mem_size:-'not'} : "[0-9]*" > /dev/null ; then
@@ -382,12 +389,13 @@ fi
 # core dump settings
 ulimit -c 'unlimited'
 
+
+# ----- Pyenv -----
+
 # pyenv settings
 if [[ -n ${pyenv_root} ]]; then
-    if ! ${ZSH_ENV_LOADED}; then
-        export PYENV_ROOT=${pyenv_root}
-        export PATH=${PYENV_ROOT}/bin:$PATH
-    fi
+    export PYENV_ROOT=${pyenv_root}
+    export PATH=${PYENV_ROOT}/bin:$PATH
     if [ ! -d ${PYENV_ROOT} ]; then
 	    logger_logging 'INFO' 'Installing pyenv and pyenv-virtualenv' true
     	git clone 'git://github.com/yyuu/pyenv.git' ${PYENV_ROOT}
@@ -406,6 +414,9 @@ if [[ -n ${pyenv_root} ]]; then
     logger_finished
 fi
 
+
+# ----- Zplug -----
+
 # zplug config
 ## if not exist, install zplug
 if [[ -n ${zplug_home} ]]; then
@@ -418,9 +429,7 @@ fi
 ## settings
 set +ue
 if [[ -d ${zplug_home} ]]; then
-    if ! ${ZSH_ENV_LOADED}; then
-        export ZPLUG_HOME=${zplug_home}
-    fi
+    export ZPLUG_HOME=${zplug_home}
     # load zplug
     ## Caution: redundant PATHs are automatically removed by zplug
     source ${ZPLUG_HOME}/init.zsh
@@ -454,13 +463,13 @@ fi
 set -ue
 
 
+# ----- Finalize -----
+
 # end -u, -e
 set +ue
 
-# ----- end settings -----
 
-
-# ----- begin loading outside files -----
+# ----- Local & outside configurations -----
 
 # load outside files
 ## local rc
