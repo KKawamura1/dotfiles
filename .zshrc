@@ -369,8 +369,9 @@ if [[ -d ${zsh_completion_path} ]]; then
     fpath=(${zsh_completion_path} ${fpath:-})
 fi
 ## Load compinit
-autoload -Uz compinit
-compinit
+## Not-required: zplug do it automatically
+# autoload -Uz compinit
+# compinit
 
 # Remove redundant PATHs
 # See: https://qiita.com/camisoul/items/78e43923615434ba519b
