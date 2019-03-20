@@ -7,6 +7,14 @@
 ## see: http://d.hatena.ne.jp/flying-foozy/20140130/1391096196
 [ -z "${PS1:-}" ] && return
 
+# Whether this file is already loaded or not
+# See: http://blog.aqutras.com/entry/2016/05/12/210000
+if [ -z $ZSH_ENV_LOADED ]; then
+    export ZSH_ENV_LOADED=false
+else
+    export ZSH_ENV_LOADED=true
+fi
+
 # ----- settings -----
 
 # raise error when you use an undefined variable
@@ -96,25 +104,57 @@ pyenv_root=${pyenv_root:-}
 ## type: int (kbytes)
 mem_size=${mem_size:-}
 
+# Export variables
+## Not to export when load twice (often written in .zsh_profile)
+if ! $ZSH_ENV_LOADED; then
+    # use standart lang
+    ## see: https://eng-entrance.com/linux-localization-lang
+    export LANG=en_US.UTF-8
+    # export LANG=ja_JP.UTF-8
 
-# use standart lang
-## see: https://eng-entrance.com/linux-localization-lang
-export LANG=en_US.UTF-8
-# export LANG=ja_JP.UTF-8
+    # add paths
+    export PATH=${usr_local}/bin:${PATH:-}
+    export LD_LIBRARY_PATH=${usr_local}/lib:${LD_LIBRARY_PATH:-}
+    export LIBRARY_PATH=${usr_local}/lib:${LIBRARY_PATH:-}
+    export CPATH=${usr_local}/include:${CPATH:-}
 
-# add paths
-export PATH=${usr_local}/bin:${PATH:-}
-export LD_LIBRARY_PATH=${usr_local}/lib:${LD_LIBRARY_PATH:-}
-export LIBRARY_PATH=${usr_local}/lib:${LIBRARY_PATH:-}
-export CPATH=${usr_local}/include:${CPATH:-}
-
-# add Python paths
-if [[ -n $local_home ]]; then
-    python_path_dir=${local_home}/python_modules/
-    if [[ ! -d ${python_path_dir} ]]; then
-        mkdir ${python_path_dir}
+    # add Python paths
+    if [[ -n $local_home ]]; then
+        python_path_dir=${local_home}/python_modules/
+        if [[ ! -d ${python_path_dir} ]]; then
+            mkdir ${python_path_dir}
+        fi
+        export PYTHONPATH=${python_path_dir}:${PYTHONPATH:-}
     fi
-    export PYTHONPATH=${python_path_dir}:${PYTHONPATH:-}
+
+    # cuda settings
+    if [[ -d ${cuda_root} ]]; then
+        # set cuda path
+        # see: https://qiita.com/daichan1111/items/6ca75c688fff4cf14023
+        export CUDA_ROOT=${cuda_root}
+        export CUDA_PATH=${CUDA_ROOT}
+        export PATH=${CUDA_ROOT}/bin:${PATH}
+        export LD_LIBRARY_PATH=${CUDA_ROOT}/lib64:${CUDA_ROOT}/lib:${LD_LIBRARY_PATH}
+        export CPATH=${CUDA_ROOT}/include:${CPATH}
+    fi
+
+    # overwrite commands with coreutils
+    ## see: http://qiita.com/catatsuy/items/50b339ead2571fd3f628
+    if [[ $(uname) == 'Darwin' ]]; then
+        export PATH=${usr_local}/opt/coreutils/libexec/gnubin:${PATH:-}
+        export MANPATH=${usr_local}/opt/coreutils/libexec/gnuman:${MANPATH:-}
+    fi
+
+    # tmux color settings
+    # see: https://github.com/sellout/emacs-color-theme-solarized/issues/62
+    export TERM="xterm-256color"
+
+    # fix directory stack size
+    export DIRSTACKSIZE=100
+
+    # set other paths
+    export MYPYPATH=${HOME}/.config/mypy/stubs/:${MYPYPATH:-}
+
 fi
 
 # use colors
@@ -133,9 +173,6 @@ SAVEHIST=10000
 ## usage: add-zsh-hook trigger-func execute-func
 ## see: https://qiita.com/mollifier/items/558712f1a93ee07e22e2
 autoload -Uz add-zsh-hook
-
-# fix directory stack size
-export DIRSTACKSIZE=100
 
 # share histories with other terminals
 setopt share_history
@@ -323,13 +360,6 @@ function mkcd() {
     fi
 }
 
-# overwrite commands with coreutils
-## see: http://qiita.com/catatsuy/items/50b339ead2571fd3f628
-if [[ $(uname) == 'Darwin' ]]; then
-    export PATH=/usr/local/opt/coreutils/libexec/gnubin:${PATH:-}
-    export MANPATH=/usr/local/opt/coreutils/libexec/gnuman:${MANPATH:-}
-fi
-
 # disable wildcard expansion (for like scp)
 setopt nonomatch
 
@@ -341,17 +371,6 @@ fi
 ## load compinit
 autoload -Uz compinit
 compinit
-
-# cuda settings
-if [[ -d ${cuda_root} ]]; then
-    # set cuda path
-    # see: https://qiita.com/daichan1111/items/6ca75c688fff4cf14023
-    export CUDA_ROOT=${cuda_root}
-    export CUDA_PATH=${CUDA_ROOT}
-    export PATH=${CUDA_ROOT}/bin:${PATH}
-    export LD_LIBRARY_PATH=${CUDA_ROOT}/lib64:${CUDA_ROOT}/lib:${LD_LIBRARY_PATH}
-    export CPATH=${CUDA_ROOT}/include:${CPATH}
-fi
 
 # memory settings
 ## see: http://www.yukun.info/blog/2011/08/bash-if-num-str.html
@@ -365,15 +384,17 @@ ulimit -c 'unlimited'
 
 # pyenv settings
 if [[ -n ${pyenv_root} ]]; then
-    export PYENV_ROOT=${pyenv_root}
-    if [ ! -d ${PYENV_ROOT} ]; then
-	logger_logging 'INFO' 'Installing pyenv and pyenv-virtualenv' true
-    	git clone 'git://github.com/yyuu/pyenv.git' ${PYENV_ROOT}
-	logger_continue
-    	git clone 'https://github.com/pyenv/pyenv-virtualenv.git' ${PYENV_ROOT}'/plugins/pyenv-virtualenv'
-	logger_finished
+    if ! ${ZSH_ENV_LOADED}; then
+        export PYENV_ROOT=${pyenv_root}
+        export PATH=${PYENV_ROOT}/bin:$PATH
     fi
-    export PATH=${PYENV_ROOT}/bin:$PATH
+    if [ ! -d ${PYENV_ROOT} ]; then
+	    logger_logging 'INFO' 'Installing pyenv and pyenv-virtualenv' true
+    	git clone 'git://github.com/yyuu/pyenv.git' ${PYENV_ROOT}
+	    logger_continue
+    	git clone 'https://github.com/pyenv/pyenv-virtualenv.git' ${PYENV_ROOT}'/plugins/pyenv-virtualenv'
+	    logger_finished
+    fi
     logger_logging 'INFO' 'Execute pyenv-init' true
     set +ue
     logger_continue
@@ -384,14 +405,6 @@ if [[ -n ${pyenv_root} ]]; then
     set -ue
     logger_finished
 fi
-
-# tmux color settings
-# see: https://github.com/sellout/emacs-color-theme-solarized/issues/62
-export TERM="xterm-256color"
-
-# set other paths
-export MYPYPATH=${HOME}/.config/mypy/stubs/:${MYPYPATH:-}
-
 
 # zplug config
 ## if not exist, install zplug
@@ -405,8 +418,11 @@ fi
 ## settings
 set +ue
 if [[ -d ${zplug_home} ]]; then
-    export ZPLUG_HOME=${zplug_home}
+    if ! ${ZSH_ENV_LOADED}; then
+        export ZPLUG_HOME=${zplug_home}
+    fi
     # load zplug
+    ## Caution: redundant PATHs are automatically removed by zplug
     source ${ZPLUG_HOME}/init.zsh
     # load defalut plugins
     zplug 'zplug/zplug'
@@ -421,14 +437,14 @@ if [[ -d ${zplug_home} ]]; then
     ## zplug "hoge/huga"
     zplug_source=${local_home:-${HOME}}/.zshrc.zplug
     if [[ -f ${zplug_source} ]]; then
-	source ${zplug_source}
+    	source ${zplug_source}
     fi
     # auto install
     if ! zplug check --verbose; then
-	printf 'Install? [y/N]: '
-	if read -q; then
-	    echo; zplug install
-	fi
+        printf 'Install? [y/N]: '
+        if read -q; then
+            echo; zplug install
+        fi
     fi
     # load plugins
     zplug load --verbose
