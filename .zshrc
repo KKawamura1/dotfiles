@@ -114,12 +114,6 @@ zplug_packages=${zplug_packages:-}
 ## Default: None
 ## Example: "${usr_local}/cuda"
 cuda_root=${cuda_root:-}
-# Pyenv root
-## Path to the pyenv (if not installed there, we automatically install it)
-## Type: path
-## Default: None
-## Example: "${local_home}/.pyenv"
-pyenv_root=${pyenv_root:-}
 # Memory limitation
 ## If set, we restrict the memoty usage
 ## Type: int (kbytes)
@@ -389,31 +383,6 @@ fi
 
 # Core dump settings
 ulimit -c 'unlimited'
-
-
-# ----- Pyenv -----
-
-# Pyenv settings
-if [[ -n ${pyenv_root} ]]; then
-    export PYENV_ROOT=${pyenv_root}
-    export PATH=${PYENV_ROOT}/bin:$PATH
-    if [ ! -d ${PYENV_ROOT} ]; then
-	    logger_logging 'INFO' 'Installing pyenv and pyenv-virtualenv' true
-    	git clone 'git://github.com/yyuu/pyenv.git' ${PYENV_ROOT}
-	    logger_continue
-    	git clone 'https://github.com/pyenv/pyenv-virtualenv.git' ${PYENV_ROOT}'/plugins/pyenv-virtualenv'
-	    logger_finished
-    fi
-    logger_logging 'INFO' 'Execute pyenv-init' true
-    set +ue
-    logger_continue
-    eval "$(pyenv init -)"
-    logger_continue
-    eval "$(pyenv virtualenv-init -)"
-    logger_continue
-    set -ue
-    logger_finished
-fi
 
 
 # ----- Zplug -----
