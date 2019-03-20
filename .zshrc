@@ -3,33 +3,33 @@
 # =================
 
 # If not running interactively, don't do anything
-## for ssh non-interactive shell
-## see: http://d.hatena.ne.jp/flying-foozy/20140130/1391096196
+## For ssh non-interactive shell
+## See: http://d.hatena.ne.jp/flying-foozy/20140130/1391096196
 [ -z "${PS1:-}" ] && return
 
-# raise error when you use an undefined variable
+# Raise error when you use an undefined variable
 set -u
-# halt shell scripts when an error occurs
+# Halt shell scripts when an error occurs
 set -e
 
 
 # ----- Local functions -----
 
-# logger
-## main logger
+# Logger
+## Main logger
 logger_logging () {
-    # arg1
-    # log_level: str = 'NOTSET'
-    # level of the log. e.g. INFO or WARNING.
+    # Arg1
+    # Log_level: str = 'NOTSET'
+    # Level of the log. E.g. INFO or WARNING.
     log_level=${1:-'NOTSET'}
-    # arg2
-    # message: str = ''
-    # main message of the log.
+    # Arg2
+    # Message: str = ''
+    # Main message of the log.
     message=$2
-    # arg3
-    # continues: bool = false
-    # whether to open a new line or not at the end of the message.
-    # if true, continue the same line and not to open a new line.
+    # Arg3
+    # Continues: bool = false
+    # Whether to open a new line or not at the end of the message.
+    # If true, continue the same line and not to open a new line.
     continues=${3:-false}
 
     message_line="zshrc: [${log_level}] "${message}
@@ -39,11 +39,11 @@ logger_logging () {
 	echo ${message_line}
     fi
 }
-## continue
+## Continue
 logger_continue () {
     printf '.'
 }
-## end continue
+## End continue
 logger_finished () {
     echo '. done.'
 }
@@ -51,7 +51,7 @@ logger_finished () {
 
 # ----- First-of-all setups -----
 
-# compile when modified
+# Compile when modified
 zshrc_source=${HOME}/.zshrc
 zshrc_compiled=${zshrc_source}.zwc
 if [[ ( ! -f ${zshrc_compiled} ) || ${zshrc_source} -nt ${zshrc_compiled} ]]; then
@@ -63,60 +63,60 @@ fi
 
 # ----- Read environment settings -----
 
-# local configuration
-## load local-config file
+# Local configuration
+## Load local-config file
 config_path=${HOME}/.zshrc.config
 if [[ ! -f ${config_path} ]]; then
     logger_logging 'ERROR' 'Make your config file and place it in '${config_path}'!'
-    # safe exit
+    # Safe exit
     return 2>&- || exit
 fi
 source ${config_path}
-## local home path
-## type: path
+## Local home path
+## Type: path
 local_home=${local_home:-}
 if [[ ! -d ${local_home} && -n ${local_home} ]]; then
     mkdir -p ${local_home}
 fi
-## local-config file in local-home
+## Local-config file in local-home
 config_path=${local_home:+${local_home}/.zshrc.config}
 if [[ -f ${config_path} ]]; then
     source ${config_path}
 fi
-## bin, lib, share, or others
-## type: path
+## Bin, lib, share, or others
+## Type: path
 usr_local=${usr_local:-'/usr/local'}
-## zsh-completions
-## type: path
+## Zsh-completions
+## Type: path
 zsh_completion_path=${zsh_completion_path:-}
-## zsh zplug
-## type: path
+## Zsh zplug
+## Type: path
 zplug_home=${zplug_home:-}
-## cuda root
-## type: path
+## Cuda root
+## Type: path
 cuda_root=${cuda_root:-}
-## pyenv root
-## type: path
+## Pyenv root
+## Type: path
 pyenv_root=${pyenv_root:-}
-## memory limitation
-## type: int (kbytes)
+## Memory limitation
+## Type: int (kbytes)
 mem_size=${mem_size:-}
 
 
 # ----- Export variables -----
 
-# use standart lang
-## see: https://eng-entrance.com/linux-localization-lang
+# Use standart lang
+## See: https://eng-entrance.com/linux-localization-lang
 export LANG=en_US.UTF-8
-# export LANG=ja_JP.UTF-8
+# Export LANG=ja_JP.UTF-8
 
-# add paths
+# Add paths
 export PATH=${usr_local}/bin:${PATH:-}
 export LD_LIBRARY_PATH=${usr_local}/lib:${LD_LIBRARY_PATH:-}
 export LIBRARY_PATH=${usr_local}/lib:${LIBRARY_PATH:-}
 export CPATH=${usr_local}/include:${CPATH:-}
 
-# add Python paths
+# Add Python paths
 if [[ -n $local_home ]]; then
     python_path_dir=${local_home}/python_modules/
     if [[ ! -d ${python_path_dir} ]]; then
@@ -125,10 +125,10 @@ if [[ -n $local_home ]]; then
     export PYTHONPATH=${python_path_dir}:${PYTHONPATH:-}
 fi
 
-# cuda settings
+# Cuda settings
 if [[ -d ${cuda_root} ]]; then
-    # set cuda path
-    # see: https://qiita.com/daichan1111/items/6ca75c688fff4cf14023
+    # Set cuda path
+    # See: https://qiita.com/daichan1111/items/6ca75c688fff4cf14023
     export CUDA_ROOT=${cuda_root}
     export CUDA_PATH=${CUDA_ROOT}
     export PATH=${CUDA_ROOT}/bin:${PATH}
@@ -136,27 +136,27 @@ if [[ -d ${cuda_root} ]]; then
     export CPATH=${CUDA_ROOT}/include:${CPATH}
 fi
 
-# overwrite commands with coreutils
-## see: http://qiita.com/catatsuy/items/50b339ead2571fd3f628
+# Overwrite commands with coreutils
+## See: http://qiita.com/catatsuy/items/50b339ead2571fd3f628
 if [[ $(uname) == 'Darwin' ]]; then
     export PATH=${usr_local}/opt/coreutils/libexec/gnubin:${PATH:-}
     export MANPATH=${usr_local}/opt/coreutils/libexec/gnuman:${MANPATH:-}
 fi
 
-# tmux color settings
-# see: https://github.com/sellout/emacs-color-theme-solarized/issues/62
+# Tmux color settings
+# See: https://github.com/sellout/emacs-color-theme-solarized/issues/62
 export TERM="xterm-256color"
 
-# fix directory stack size
+# Fix directory stack size
 export DIRSTACKSIZE=100
 
-# set other paths
+# Set other paths
 export MYPYPATH=${HOME}/.config/mypy/stubs/:${MYPYPATH:-}
 
 
 # ----- Aliases -----
 
-# global aliases
+# Global aliases
 alias -g L='| less'
 alias -g HD='| head'
 alias -g TL='| tail'
@@ -164,14 +164,14 @@ alias -g G='| grep'
 alias -g GI='| grep -ri'
 alias -g T='2>&1 | tee -i'
 
-# normal aliases
+# Normal aliases
 ## ls
 alias myls='ls -lh --color=auto'
 alias lst='myls -tr'
 alias l='lst'
 alias ll='myls'
 alias la='myls -a'
-## editors
+## Editors
 alias emacs='emacs -nw'
 alias e='emacs'
 alias v='vim'
@@ -182,16 +182,16 @@ alias back='pushd'
 ## tmux
 alias t='tmux'
 alias ta='t a'
-## history
+## History
 alias hist='fc -lt '%F %T' 1'
-## copy/remove with info
+## Copy/remove with info
 alias cp='cp -i'
 alias rm='rm -I'
-## make directory with parents
+## Make directory with parents
 alias mkdir='mkdir -p'
 ## ssh X forwarding
 alias ssh='ssh -X'
-## human readable diff
+## Human readable diff
 alias diff='diff -U1'
 ## su without environment variables
 alias su='su -l'
@@ -206,9 +206,9 @@ alias cmake_debug='cmake -DCMAKE_BUILD_TYPE=Debug'
 
 # ----- Useful function commands -----
 
-# do ls after cd
-## abbreviate if there are lots of files
-## see: https://qiita.com/yuyuchu3333/items/b10542db482c3ac8b059
+# Do ls after cd
+## Abbreviate if there are lots of files
+## See: https://qiita.com/yuyuchu3333/items/b10542db482c3ac8b059
 chpwd() {
     ls_abbrev
 }
@@ -246,7 +246,7 @@ ls_abbrev() {
     fi
 }
 
-# do mkdir and cd
+# Do mkdir and cd
 function mkcd() {
     if [[ -d ${1} ]]; then
 	logger_logging 'ERROR' 'directory'${1}' already exists.'
@@ -259,64 +259,64 @@ function mkcd() {
 
 # ----- Zsh-specific settings -----
 
-# use colors
+# Use colors
 autoload -Uz colors
 colors
 
-# emacs key bind
+# Emacs key bind
 bindkey -e
 
-# set history files and max lines
+# Set history files and max lines
 HISTFILE=${local_home:-${HOME}}/.zsh_history
 HISTSIZE=10000
 SAVEHIST=10000
 
-# enable add-zsh-hook
-## usage: add-zsh-hook trigger-func execute-func
-## see: https://qiita.com/mollifier/items/558712f1a93ee07e22e2
+# Enable add-zsh-hook
+## Usage: add-zsh-hook trigger-func execute-func
+## See: https://qiita.com/mollifier/items/558712f1a93ee07e22e2
 autoload -Uz add-zsh-hook
 
-# share histories with other terminals
+# Share histories with other terminals
 setopt share_history
 
-# ignore duplicated histories
+# Ignore duplicated histories
 setopt histignorealldups
 
-# change directory without cd command
+# Change directory without cd command
 setopt auto_cd
-## paths that can be accessed from everywhere
-## see: https://qiita.com/yaotti/items/157ff0a46736ec793a91
+## Paths that can be accessed from everywhere
+## See: https://qiita.com/yaotti/items/157ff0a46736ec793a91
 cdpath=(${local_home:-} ${HOME})
 
-# automatically execute pushd
+# Automatically execute pushd
 setopt auto_pushd
 
-# ignore duplicated pushd histories
+# Ignore duplicated pushd histories
 setopt pushd_ignore_dups
 
-# correct command typo
+# Correct command typo
 setopt correct
 
-# auto complete --prefix=/hoge/fug| <= tab
+# Auto complete --prefix=/hoge/fug| <= tab
 setopt magic_equal_subst
 
-# set chunk charactors
-## see: https://gist.github.com/mollifier/4331a4db00a5555582e4
+# Set chunk charactors
+## See: https://gist.github.com/mollifier/4331a4db00a5555582e4
 autoload -Uz select-word-style
 select-word-style default
 zstyle ':zle:*' word-chars ' /=;@:{}[]()<>,|.'
-# zstyle ':zle:*' word-chars "_-./;@"
+# Zstyle ':zle:*' word-chars "_-./;@"
 zstyle ':zle:*' word-style unspecified
 
-# unset Ctrl+s lock and Ctrl+q unlock
-## see: http://blog.mkt-sys.jp/2014/06/fix-zsh-env.html
+# Unset Ctrl+s lock and Ctrl+q unlock
+## See: http://blog.mkt-sys.jp/2014/06/fix-zsh-env.html
 setopt no_flow_control
 
-# set prompt
-## deprecated; use liquidprompt instead
+# Set prompt
+## Deprecated; use liquidprompt instead
 # PROMPT="%(?.%{${fg[green]}%}.%{${fg[red]}%})%n${reset_color}@${fg[blue]}%m${reset_color}(%*%) %~
 #%# "
-# git
+# Git
 #RPROMPT="%{${fg[blue]}%}[%~]%{${reset_color}%}"
 #autoload -Uz vcs_info
 #setopt prompt_subst
@@ -327,72 +327,74 @@ setopt no_flow_control
 #zstyle ':vcs_info:*' actionformats '[%b|%a]'
 #precmd () { vcs_info }
 #RPROMPT=$RPROMPT'${vcs_info_msg_0_}'
-# see: http://www.yoheim.net/blog.php?q=20140309
-# export PS1="\u: \w $" # user-name: directory-name $
+# See: http://www.yoheim.net/blog.php?q=20140309
+# Export PS1="\u: \w $" # User-name: directory-name $
 
-# move with <- and -> keys after TAB completion
+# Move with <- and -> keys after TAB completion
 zstyle ':completion:*:default' menu select=2
 
-# capital-unaware fuzzy match
+# Capital-unaware fuzzy match
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 
-# incremental forward/backward search with Ctrl+s/Ctrl+r
+# Incremental forward/backward search with Ctrl+s/Ctrl+r
 bindkey '^r' history-incremental-pattern-search-backward
 bindkey '^s' history-incremental-pattern-search-forward
 
-# history search with middle inputs
-## ex.
-## % ls ~/<Ctrl+p>
-## -> % ls ~/.ssh/
+# History search with middle inputs
+## Ex.) % ls ~/<Ctrl+p>
+##   -> % ls ~/.ssh/
 autoload -Uz history-search-end
 zle -N history-beginning-search-backward-end history-search-end
 zle -N history-beginning-search-forward-end history-search-end
 bindkey "^p" history-beginning-search-backward-end
 bindkey "^b" history-beginning-search-forward-end
 
-# enable cdr, chpwd_recent_dirs
+# Enable cdr, chpwd_recent_dirs
 ## cdr: cd with history stack
 ## chpwd_recent_dirs: memorize cd history
 autoload -Uz chpwd_recent_dirs cdr
 add-zsh-hook chpwd chpwd_recent_dirs
-# use cdr like normal-cd
+# Use cdr like normal-cd
 zstyle ":chpwd:*" recent-dirs-default true
 
-# bundled move
-## ex.
-## zmv *.txt *.txt.bk
+# Bundled move
+## Ex.) zmv *.txt *.txt.bk
 autoload -Uz zmv
 alias zmv='noglob zmv -W'
 
-# disable wildcard expansion (for like scp)
+# Disable wildcard expansion (for like scp)
 setopt nonomatch
 
-# completions
-## add zsh-completions
+# Completions
+## Add zsh-completions
 if [[ -d ${zsh_completion_path} ]]; then
     fpath=(${zsh_completion_path} ${fpath:-})
 fi
-## load compinit
+## Load compinit
 autoload -Uz compinit
 compinit
+
+# Remove redundant PATHs
+# See: https://qiita.com/camisoul/items/78e43923615434ba519b
+typeset -U PATH path
 
 
 # ----- Memory limitation -----
 
-# memory settings
-## see: http://www.yukun.info/blog/2011/08/bash-if-num-str.html
+# Memory settings
+## See: http://www.yukun.info/blog/2011/08/bash-if-num-str.html
 if expr ${mem_size:-'not'} : "[0-9]*" > /dev/null ; then
     logger_logging 'INFO' 'Virtual memory is limited up to'${mem_size}'KB.'
     ulimit -S -v ${mem_size}
 fi
 
-# core dump settings
+# Core dump settings
 ulimit -c 'unlimited'
 
 
 # ----- Pyenv -----
 
-# pyenv settings
+# Pyenv settings
 if [[ -n ${pyenv_root} ]]; then
     export PYENV_ROOT=${pyenv_root}
     export PATH=${PYENV_ROOT}/bin:$PATH
@@ -417,8 +419,8 @@ fi
 
 # ----- Zplug -----
 
-# zplug config
-## if not exist, install zplug
+# Zplug config
+## If not exist, install zplug
 if [[ -n ${zplug_home} ]]; then
     if [[ ! -d ${zplug_home} ]]; then
 	logger_logging 'INFO' 'Installing zplug' true
@@ -426,14 +428,14 @@ if [[ -n ${zplug_home} ]]; then
 	logger_finished
     fi
 fi
-## settings
+## Settings
 set +ue
 if [[ -d ${zplug_home} ]]; then
     export ZPLUG_HOME=${zplug_home}
-    # load zplug
+    # Load zplug
     ## Caution: redundant PATHs are automatically removed by zplug
     source ${ZPLUG_HOME}/init.zsh
-    # load defalut plugins
+    # Load defalut plugins
     zplug 'zplug/zplug'
     zplug 'zsh-users/zsh-autosuggestions'
     zplug 'nojhan/liquidprompt'
@@ -441,21 +443,21 @@ if [[ -d ${zplug_home} ]]; then
     if [[ -d ${zsh_completion_path} ]]; then
 	zplug 'zsh-users/zsh-completions'
     fi
-    # load your zplug config
-    ## ex.
-    ## zplug "hoge/huga"
+    # Load your zplug config
+    ## Ex.
+    ## Zplug "hoge/huga"
     zplug_source=${local_home:-${HOME}}/.zshrc.zplug
     if [[ -f ${zplug_source} ]]; then
     	source ${zplug_source}
     fi
-    # auto install
+    # Auto install
     if ! zplug check --verbose; then
         printf 'Install? [y/N]: '
         if read -q; then
             echo; zplug install
         fi
     fi
-    # load plugins
+    # Load plugins
     zplug load --verbose
 else
     logger_logging 'WARNING' 'Cannot find zplug_home in local config file.'
@@ -465,14 +467,14 @@ set -ue
 
 # ----- Finalize -----
 
-# end -u, -e
+# End -u, -e
 set +ue
 
 
 # ----- Local & outside configurations -----
 
-# load outside files
-## local rc
+# Load outside files
+## Local rc
 local_source=${local_home:-${HOME}}/.zshrc.local
 if [[ -f ${local_source} ]]; then
     source ${local_source}
