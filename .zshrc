@@ -64,8 +64,8 @@ fi
 # ----- Read environment settings -----
 
 # Local configuration
-## Load local-config file
-## Local-config file should contain some environment variables shown below
+## Load local-config variables
+## This file should contain some environment variables shown below
 config_path=${HOME}/.zshrc.config
 if [[ ! -f ${config_path} ]]; then
     logger_logging 'ERROR' 'Make your config file and place it in '${config_path}'!'
@@ -120,6 +120,12 @@ cuda_root=${cuda_root:-}
 ## Default: None
 ## Example: 104857600
 mem_size=${mem_size:-}
+# Local configuration file
+## If set, we source it after finishing the default settings
+## Type: path
+## Default: None
+## Example: "${local_home}/.zshrc.local"
+local_config_file=${local_config_file:-}
 
 
 # ----- Export variables -----
@@ -443,7 +449,6 @@ unset -f logger_logging logger_continue logger_finished
 
 # Load outside files
 ## Local rc
-local_source=${local_home:-${HOME}}/.zshrc.local
-if [[ -f ${local_source} ]]; then
-    source ${local_source}
+if [[ -n ${local_config_file} ]]; then
+    source ${local_config_file}
 fi
