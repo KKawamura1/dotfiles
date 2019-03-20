@@ -102,6 +102,12 @@ zsh_completion_path=${zsh_completion_path:-}
 ## Default: None
 ## Example: "${local_home}/zplug"
 zplug_home=${zplug_home:-}
+# Zsh zplug packages
+## Path to the zplug configuration file (repetition of 'zplug "hoge/huga"\n')
+## Type: path
+## Default: None
+## Example: "${local_home}/zshrc.zplug"
+zplug_packages=${zplug_packages:-}
 # Cuda root
 ## Path to the cuda (if not installed, then the behaviour is not supported)
 ## Type: path
@@ -277,7 +283,7 @@ colors
 bindkey -e
 
 # Set history files and max lines
-HISTFILE=${local_home:-${HOME}}/.zsh_history
+HISTFILE=${local_home}/.zsh_history
 HISTSIZE=10000
 SAVEHIST=10000
 
@@ -296,7 +302,7 @@ setopt histignorealldups
 setopt auto_cd
 ## Paths that can be accessed from everywhere
 ## See: https://qiita.com/yaotti/items/157ff0a46736ec793a91
-cdpath=(${local_home:-} ${HOME})
+cdpath=(${local_home} ${HOME})
 
 # Automatically execute pushd
 setopt auto_pushd
@@ -436,11 +442,8 @@ if [[ -d ${zplug_home} ]]; then
 	    zplug 'zsh-users/zsh-completions'
     fi
     # Load your zplug config
-    ## Ex.
-    ## Zplug "hoge/huga"
-    zplug_source=${local_home:-${HOME}}/.zshrc.zplug
-    if [[ -f ${zplug_source} ]]; then
-    	source ${zplug_source}
+    if [[ -n ${zplug_packages} ]]; then
+    	source ${zplug_packages}
     fi
     # Auto install
     if ! zplug check --verbose; then
