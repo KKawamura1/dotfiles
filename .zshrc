@@ -193,6 +193,7 @@ alias e='emacs'
 alias v='vim'
 alias vi='vim'
 ## cd
+alias cd='HOME=${local_home} cd'
 alias c='cdr'
 alias back='pushd'
 ## tmux
