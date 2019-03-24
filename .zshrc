@@ -21,18 +21,18 @@ logger_logging () {
     # Arg1
     # Log_level: str = 'NOTSET'
     # Level of the log. E.g. INFO or WARNING.
-    log_level=${1:-'NOTSET'}
+    local log_level=${1:-'NOTSET'}
     # Arg2
     # Message: str = ''
     # Main message of the log.
-    message=$2
+    local message=$2
     # Arg3
     # Continues: bool = false
     # Whether to open a new line or not at the end of the message.
     # If true, continue the same line and not to open a new line.
-    continues=${3:-false}
+    local continues=${3:-false}
 
-    message_line="zshrc: [${log_level}] "${message}
+    local message_line="zshrc: [${log_level}] "${message}
     if ${continues}; then
     	printf ${message_line}'.'
     else
