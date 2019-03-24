@@ -85,7 +85,16 @@ update_check () {
     eval ${check_command}
     date +%s > ${time_save_path}
 }
-    
+
+# Safe exit
+finalize () {
+    # End -u, -e
+    set +ue
+
+    # Remove local functions
+    unset -f logger_logging logger_continue logger_finished is_WSL update_check
+}
+
 
 # ----- First-of-all setups -----
 
@@ -107,8 +116,8 @@ fi
 config_path=${HOME}/.zshrc.config
 if [[ ! -f ${config_path} ]]; then
     logger_logging 'ERROR' 'Make your config file and place it in '${config_path}'!'
-    # Safe exit
-    return 2>&- || exit
+    finalize
+    return 2>&- || exit 1
 fi
 source ${config_path}
 # Local home path
@@ -504,3 +513,7 @@ unset -f logger_logging logger_continue logger_finished update_check
 if [[ -n ${local_config_file} ]]; then
     source ${local_config_file}
 fi
+
+
+finalize
+return 2>&- || exit 0
