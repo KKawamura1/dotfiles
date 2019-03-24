@@ -395,6 +395,12 @@ setopt correct
 # Auto complete --prefix=/hoge/fug| <= tab
 setopt magic_equal_subst
 
+# NICE not working in WSL
+## https://github.com/Microsoft/WSL/issues/1887
+if is_WSL; then
+    unsetopt BG_NICE
+fi
+
 # Set chunk charactors
 ## See: https://gist.github.com/mollifier/4331a4db00a5555582e4
 autoload -Uz select-word-style
