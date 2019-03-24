@@ -48,6 +48,15 @@ logger_finished () {
     echo '. done.'
 }
 
+# Windows WSL check
+## See: https://moyapro.com/2018/03/21/detect-wsl/
+is_WSL () {
+    if [[ -f '/proc/sys/fs/binfmt_misc/WSLInterop' ]]; then
+        return 0
+    fi
+    return 1
+}
+
 # Update check
 update_check () {
     local mode=$1
@@ -105,6 +114,19 @@ if [[ ( ! -f ${zshrc_compiled} ) || ${zshrc_source} -nt ${zshrc_compiled} ]]; th
     logger_logging 'INFO' 'compiling zshrc' true
     zcompile ${zshrc_source}
     logger_finished
+fi
+
+
+# ----- WSL check -----
+
+# If we're in WSL and there is no /etc/wsl.conf, it might be problematic because the default umask is 000
+## See: https://www.atmarkit.co.jp/ait/articles/1807/12/news036.html
+if is_WSL; then
+    if ! [[ -f '/etc/wsl.conf' ]]; then
+        logger_logging 'ERROR' 'It seems that we are in WSL and there is no setting in `/etc/wsl.conf`.\nYou should do:\nsudo echo '\''[automount]\nenabled = true\noptions = '\"'metadata,umask=22,fmask=11'\"\'' > /etc/wsl.conf'
+        finalize
+        return 2>&- || exit 1
+    fi
 fi
 
 
@@ -495,15 +517,6 @@ set -ue
 # ----- Update check -----
 update_check_path="${local_home}/.update_check_time"
 update_check ${update_check_mode} ${update_check_time} ${update_check_command} ${update_check_path}
-
-
-# ----- Finalize -----
-
-# End -u, -e
-set +ue
-
-# Remove local functions
-unset -f logger_logging logger_continue logger_finished update_check
 
 
 # ----- Local & outside configurations -----
