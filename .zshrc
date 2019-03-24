@@ -123,10 +123,11 @@ fi
 ## See: https://www.atmarkit.co.jp/ait/articles/1807/12/news036.html
 if is_WSL; then
     if ! [[ -f '/etc/wsl.conf' ]]; then
-        logger_logging 'ERROR' 'It seems that we are in WSL and there is no setting in `/etc/wsl.conf`.\nYou should do:\nsudo echo '\''[automount]\nenabled = true\noptions = '\"'metadata,umask=22,fmask=11'\"\'' > /etc/wsl.conf'
+        logger_logging 'ERROR' 'It seems that we are in WSL and there is no setting in `/etc/wsl.conf`.\nYou should do:\nsudo echo '\''[automount]\nenabled = true\noptions = '\"'metadata,umask=22,fmask=111'\"\'' > /etc/wsl.conf'
         finalize
         return 2>&- || exit 1
     fi
+    umask 022
 fi
 
 
