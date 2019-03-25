@@ -214,6 +214,7 @@ export LANG=en_US.UTF-8
 # export LANG=ja_JP.UTF-8
 
 # Python user path (used when pip install --user)
+## https://qiita.com/ronin_gw/items/cdf8112b61649ca455f5
 export PYTHONUSERBASE=${local_home}/local
 
 # Add paths
