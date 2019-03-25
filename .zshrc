@@ -213,11 +213,14 @@ local_config_file=${local_config_file:-}
 export LANG=en_US.UTF-8
 # export LANG=ja_JP.UTF-8
 
+# Python user path (used when pip install --user)
+export PYTHONUSERBASE=${local_home}/local
+
 # Add paths
-export PATH=${usr_local}/bin:${PATH:-}
-export LD_LIBRARY_PATH=${usr_local}/lib:${LD_LIBRARY_PATH:-}
-export LIBRARY_PATH=${usr_local}/lib:${LIBRARY_PATH:-}
-export CPATH=${usr_local}/include:${CPATH:-}
+export PATH=${PYTHONUSERBASE}/bin:${usr_local}/bin:${PATH:-}
+export LD_LIBRARY_PATH=${PYTHONUSERBASE}/lib:${usr_local}/lib:${LD_LIBRARY_PATH:-}
+export LIBRARY_PATH=${PYTHONUSERBASE}/lib:${usr_local}/lib:${LIBRARY_PATH:-}
+export CPATH=${PYTHONUSERBASE}/include:${usr_local}/include:${CPATH:-}
 
 # Cuda settings
 if [[ -d ${cuda_root} ]]; then
