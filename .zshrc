@@ -340,7 +340,7 @@ ls_abbrev() {
 }
 
 # Do mkdir and cd
-function mkcd() {
+mkcd() {
     if [[ -d ${1} ]]; then
 	logger_logging 'ERROR' 'directory'${1}' already exists.'
 	cd $1
