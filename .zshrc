@@ -281,8 +281,8 @@ alias e='emacs'
 alias v='vim'
 alias vi='vim'
 ## cd
-alias cd='HOME=${local_home} cd'
-alias c='cdr'
+alias cd='HOME=${local_home} cdr'
+alias c='cd'
 alias back='pushd'
 ## tmux
 alias t='tmux'
