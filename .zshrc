@@ -237,12 +237,17 @@ fi
 # Overwrite commands with coreutils
 ## See: http://qiita.com/catatsuy/items/50b339ead2571fd3f628
 if [[ $(uname) == 'Darwin' ]]; then
-    export PATH=${usr_local}/opt/coreutils/libexec/gnubin:${PATH:-}
-    export MANPATH=${usr_local}/opt/coreutils/libexec/gnuman:${MANPATH:-}
+    coreutils_path=${usr_local}/opt/coreutils
+    if [[ -d ${coreutils_path} ]]; then
+        export PATH=${coreutils_path}/libexec/gnubin:${PATH:-}
+        export MANPATH=${coreutils_path}/libexec/gnuman:${MANPATH:-}
+    else
+        logger_logging 'WARNING' 'You may in MacOS and coreutils not found; consider using `brew install coreutils`.'
+    fi
 fi
 
 # Tmux color settings
-# See: https://github.com/sellout/emacs-color-theme-solarized/issues/62
+## See: https://github.com/sellout/emacs-color-theme-solarized/issues/62
 export TERM="xterm-256color"
 
 # Fix directory stack size
@@ -264,6 +269,7 @@ alias -g T='2>&1 | tee -i'
 
 # Normal aliases
 ## ls
+## Note that even in macOS we use --color=auto (which is not suited for macos `ls`) because we want to use coreutils
 alias myls='ls -lh --color=auto'
 alias lst='myls -tr'
 alias l='lst'
@@ -316,22 +322,10 @@ ls_abbrev() {
     # -l : Long line format.
     # -h : Human-readable file size.
     local cmd_ls='ls'
-    local -a opt_ls
-    opt_ls=('-alh' '--color=always')
+    local -a opt_ls=('-alh' '--color=always')
     local -i print_line_num=8
-    case "${OSTYPE}" in
-        freebsd*|darwin*)
-            if type gls > /dev/null 2>&1; then
-                cmd_ls='gls'
-            else
-                # -G : Enable colorized output.
-                opt_ls=('-aCFG')
-            fi
-            ;;
-    esac
 
-    local ls_result
-    ls_result=$(CLICOLOR_FORCE=1 COLUMNS=$COLUMNS command $cmd_ls ${opt_ls[@]} | sed $'/^\e\[[0-9;]*m$/d')
+    local ls_result=$(CLICOLOR_FORCE=1 COLUMNS=$COLUMNS $cmd_ls ${opt_ls[@]} | sed $'/^\e\[[0-9;]*m$/d')
 
     local ls_lines=$(echo "$ls_result" | wc -l | tr -d ' ')
 
@@ -465,6 +459,18 @@ fi
 # Remove redundant PATHs
 # See: https://qiita.com/camisoul/items/78e43923615434ba519b
 typeset -U PATH path
+
+
+# Ls colors
+## See: https://qiita.com/s-age/items/2046185547c73a86f09f
+if type dircolors 2>&1 > /dev/null ; then
+    color_rc='~/.colorrc'
+    if [[ -f ${color_rc} ]]; then
+        eval "dircolors ${color_rc}"
+    fi
+else
+    logger_logging 'WARNING' 'Command dircolors not found; are we in macos? If so, consider brew install coreutils.'
+fi
 
 
 # ----- Memory limitation -----
