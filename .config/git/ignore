@@ -28,6 +28,7 @@
 __pycache__/
 .python-version
 .mypy_cache
+*.pyc
 
 # C系
 *.o
