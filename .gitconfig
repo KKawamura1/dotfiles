@@ -1,7 +1,7 @@
 # This is Git's per-user configuration file.
 [user]
 	name = kkawamura
-	email = kkawamura@logos.t.u-tokyo.ac.jp
+	email = kkawamura@preferred.jp
 [merge]
 	ff = false
 [pull]
