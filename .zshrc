@@ -349,6 +349,15 @@ mkcd() {
     fi
 }
 
+# Listen password from stdin and echo it
+## Example: require-pass-command --password $(get_password)
+get_password() {
+    echo -n "Type password: " 1>&2
+    local password
+    read -s password
+    echo -n ${password}
+}
+
 
 # ----- Zsh-specific settings -----
 
