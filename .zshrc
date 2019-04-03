@@ -300,6 +300,8 @@ alias ssh='ssh -X'
 alias diff='diff -U1'
 ## su without environment variables
 alias su='su -l'
+## Create symlink
+alias symlink='ln -s'
 ## cmake
 if [ -d ${usr_local} ]; then
     cmake_install_options=' -DCMAKE_INSTALL_PREFIX='${usr_local}
