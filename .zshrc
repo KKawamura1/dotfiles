@@ -190,6 +190,11 @@ cuda_root=${cuda_root:-}
 ## Default: None
 ## Example: 104857600
 mem_size=${mem_size:-}
+# Pyenv setting
+## If set, we execute `pyenv init -`.
+## Type: bool
+## Default: false
+do_pyenv_init=${do_pyenv_init:-false}
 # Apt update check
 ## If set, we check the update every specified time with the given command
 ## Type: CheckMode (enum; one of shown below), int (hours), command (to check them in MANUAL check-mode)
@@ -546,6 +551,11 @@ set -ue
 update_check_path="${local_home}/.update_check_time"
 update_check ${update_check_mode} ${update_check_time} ${update_check_command} ${update_check_path}
 
+# ----- Pyenv settings -----
+if ${do_pyenv_init}; then
+    logger_logging 'INFO' 'Running pyenv init...'
+    eval "$(pyenv init -)"
+fi
 
 # ----- Local & outside configurations -----
 
