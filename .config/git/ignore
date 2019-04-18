@@ -18,6 +18,7 @@
 
 # vscode
 .vscode/
+.idea/
 
 # サイズが重いもの
 *.dat
