@@ -75,3 +75,7 @@ dmypy.sock
 
 !/templateLanguages.xml
 !/vcs.xml
+
+
+# Individual settings in a common repo
+__my_*/
