@@ -409,6 +409,10 @@ setopt correct
 # Auto complete --prefix=/hoge/fug| <= tab
 setopt magic_equal_subst
 
+# No overwrite with >
+## To disable this behavior, see: https://qiita.com/yuku_t/items/c83120ea22e892083651
+setopt noclobber
+
 # NICE not working in WSL
 ## https://github.com/Microsoft/WSL/issues/1887
 if is_WSL; then
