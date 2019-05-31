@@ -365,6 +365,130 @@ get_password() {
     echo -n ${password}
 }
 
+# Fetch pull request to a new branch and checkout to it.
+## Example: git-fetch-pull-request --upstream origin 42
+## For parsing arguments, see: http://dojineko.hateblo.jp/entry/2016/06/30/225113
+git-fetch-pull-request() {
+  local function_name='git-fetch-pull-request'
+
+  local help="Usage: ${function_name} [-h,--help] [--upstream UPSTREAM] NUMBER
+
+Fetch pull request to a new branch and checkout to it.
+
+Positional arguments:
+  NUMBER (int): id for the target pull request.
+
+Optional arguments:
+  -h, --help: show this message and exit.
+  --upstream UPSTREAM (str): remote upstream name. default: 'upstream'.
+  "
+
+  _git-fetch-pull-request() {
+    local number=$1
+    local upstream=$2
+
+    local branch_name="test-pull-request-${number}"
+    if [[ -z `git rev-parse --is-inside-work-tree 2> /dev/null` ]]; then
+      # Not a git repo
+      echo "Not a git repository (or any of the parent directories). Stop."
+      return 1
+    fi
+    if [[ -n `git branch --list ${branch_name}` ]]; then
+      # Branch exists
+      echo "Branch ${branch_name} already exists. Stop."
+      return 1
+    fi
+    if ! git remote show ${upstream} 2>&1 > /dev/null; then
+      # Upstream not exists
+      echo "Remote ${upstream} not exists. Stop."
+      return 1
+    fi
+
+    # Fetch
+    local fetching="git fetch upstream pull/${number}/head:${branch_name}"
+    echo "Execute ${fetching}..."
+    if ! eval ${fetching}; then
+      echo "Something went wrong. Stop."
+      return 1
+    fi
+
+    # Checkout
+    local checkout="git checkout ${branch_name}"
+    echo "Checkout to ${branch_name}..."
+    if ! eval ${checkout}; then
+      echo "Something went wrong. Stop."
+      return 1
+    fi
+    
+    return 0
+  }
+
+  show_help () {
+    echo $help
+  }
+
+  invalid_arguments () {
+    local argument=${1:-}
+    echo "${function_name}: illegal option ${argument}"
+    show_help
+  }
+
+  parameter_required () {
+    local argument=${1:-}
+    echo "${function_name}: argument required for ${argument}"
+    show_help
+  }
+
+  # Parse optional arguments
+  local upstream='upstream'
+  local PARAM=()
+  for OPT in "$@"; do
+    case $OPT in
+      '-h' | '--help' )
+        show_help
+        return 0
+        ;;
+      '--upstream' )
+        if [[ -z $2 ]] || [[ $2 =~ ^-+ ]]; then
+          parameter_required '--upstream'
+          return 1
+        fi
+        upstream=$2
+        shift 2
+        ;;
+      '--' | '-' )
+        # Treat following all arguments as positional arguments
+        shift
+        PARAM+=( "$@" )
+        break
+        ;;
+      -* )
+        invalid_arguments $1
+        return 1
+        ;;
+      * )
+        if [[ -n $1 ]] && [[ ! $1 =~ ^-+ ]]; then
+          PARAM+=( "$1" )
+          shift
+        fi
+        ;;
+    esac
+  done
+  # Get positional arguments
+  number=$PARAM; PARAM=( "${PARAM[@]:1}" )
+  if [[ -z $number ]]; then
+    parameter_required 'NUMBER'
+    return 1
+  fi
+  # Check remains
+  if [[ -n "${PARAM[@]}" ]]; then
+    invalid_arguments $PARAM
+    return 1
+  fi
+
+  # Main
+  _git-fetch-pull-request ${number} ${upstream}
+}
 
 # ----- Zsh-specific settings -----
 
