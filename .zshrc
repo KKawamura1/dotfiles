@@ -387,7 +387,7 @@ Optional arguments:
     local number=$1
     local upstream=$2
 
-    local branch_name="test-pull-request-${number}"
+    local branch_name="pull-request/${number}"
     if [[ -z `git rev-parse --is-inside-work-tree 2> /dev/null` ]]; then
       # Not a git repo
       echo "Not a git repository (or any of the parent directories). Stop."
