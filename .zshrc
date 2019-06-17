@@ -255,24 +255,19 @@ fi
 ## See: https://qiita.com/noblejasper/items/cc9332cfdd9cf450d744
 ## And for llvm from brew
 if type brew 2>&1 >/dev/null; then
-    logger_logging 'INFO' 'Searching and linking brew applications' true
+    brew_prefix='/usr/local/opt'
     applications=( llvm openssl sqlite3 )
     for application in ${applications[@]}; do
-        logger_continue
-        brew_prefix=$(brew --prefix ${application} 2>/dev/null)
-        if [[ $? == 0 ]]; then
-            export PATH=${brew_prefix}/bin:${PATH:-}
-            export CFLAGS="-I${brew_prefix}/include ${CFLAGS:-}"
-            export CPPFLAGS="-I${brew_prefix}/include ${CPPFLAGS:-}"
-            if [[ application == 'llvm' ]]; then
-                # See: https://embeddedartistry.com/blog/2017/2/20/installing-clangllvm-on-osx
-                export LDFLAGS="-L${brew_prefix}/lib -Wl,-rpath,${brew_prefix}/llvm/lib ${LDFLAGS:-}"
-            else
-                export LDFLAGS="-L${brew_prefix}/lib ${LDFLAGS:-}"
-            fi
+        export PATH=${brew_prefix}/${application}/bin:${PATH:-}
+        export CFLAGS="-I${brew_prefix}/${application}/include ${CFLAGS:-}"
+        export CPPFLAGS="-I${brew_prefix}/${application}/include ${CPPFLAGS:-}"
+        if [[ application == 'llvm' ]]; then
+            # See: https://embeddedartistry.com/blog/2017/2/20/installing-clangllvm-on-osx
+            export LDFLAGS="-L${brew_prefix}/${application}/lib -Wl,-rpath,${brew_prefix}/${application}/llvm/lib ${LDFLAGS:-}"
+        else
+            export LDFLAGS="-L${brew_prefix}/${application}/lib ${LDFLAGS:-}"
         fi
     done
-    logger_finished
 fi
 
 
