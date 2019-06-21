@@ -385,6 +385,12 @@ get_password() {
     echo -n ${password}
 }
 
+# Remove all branch that is merged
+## See: https://stackoverflow.com/questions/6127328/how-can-i-delete-all-git-branches-which-have-been-merged
+git-clean-branch() {
+    git branch --merged master | egrep -v "(^\*|master|dev)" | xargs git branch -d
+}
+
 # Fetch pull request to a new branch and checkout to it.
 ## Example: git-fetch-pull-request --upstream origin 42
 ## For parsing arguments, see: http://dojineko.hateblo.jp/entry/2016/06/30/225113
