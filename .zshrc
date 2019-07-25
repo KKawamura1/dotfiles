@@ -389,6 +389,7 @@ get_password() {
 ## See: https://stackoverflow.com/questions/6127328/how-can-i-delete-all-git-branches-which-have-been-merged
 git-clean-branch() {
     git branch --merged master | egrep -v "(^\*|master|dev)" | xargs git branch -d
+    git remote prune origin
 }
 
 # Fetch pull request to a new branch and checkout to it.
