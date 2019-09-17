@@ -385,6 +385,18 @@ get_password() {
     echo -n ${password}
 }
 
+# `git-pr` with `remote=upstream`
+## Uses git-pr in https://github.com/tj/git-extras
+git-pr-upstream() {
+    if type git-pr 2>&1 >/dev/null; then
+        git-pr "$1" upstream "${@:2}"
+    fi
+}
+## Remove if unnecessary
+if ! type git-pr 2>&1 > /dev/null; then
+    unset -f git-pr-upstream
+fi
+
 # Remove all branch that is merged
 ## See: https://stackoverflow.com/questions/6127328/how-can-i-delete-all-git-branches-which-have-been-merged
 git-clean-branch() {
