@@ -457,6 +457,18 @@ git-clean-branch() {
     git remote prune origin
 }
 
+# Update origin/master to upstream/master
+## See: https://stackoverflow.com/questions/3216360/merge-update-and-pull-git-branches-without-using-checkouts
+#  See also: https://stackoverflow.com/questions/13583231/push-an-unchecked-out-branch
+git-update-origin-master() {
+    # 1. Fetch origin master into local master
+    # 2. Fetch upstream master into local master
+    # 3. Push local master to origin/master
+    git fetch origin master:master && \
+        git fetch upstream master:master && \
+        git push origin master:master
+}
+
 # ----- Zsh-specific settings -----
 
 # Use colors
