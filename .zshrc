@@ -308,7 +308,6 @@ alias vi='vim'
 ## cd
 alias cd='HOME=${local_home} cdr'
 alias c='cd'
-alias cu='cd ../'
 alias back='pushd'
 ## tmux
 alias t='tmux'
@@ -338,6 +337,28 @@ alias cmake_debug='cmake -DCMAKE_BUILD_TYPE=Debug'
 
 
 # ----- Useful function commands -----
+
+# Up until `.git` found
+cd_git_root() {
+    local target_relative_path=".git"
+    local target_path=$(realpath ./)
+    while true; do
+        if [[ -e ${target_path}/${target_relative_path} ]]; then
+            break
+        fi
+        local parent_path=$(realpath ${target_path}/../)
+        if [[ ${target_path} == ${parent_path} ]]; then
+            echo "No ${target_relative_path} file in all parents."
+            return
+        fi
+        target_path=${parent_path}
+    done
+    if [[ ${target_path} == $(realpath ./) ]]; then
+        echo "Already on root directory."
+    else
+        cd ${target_path}
+    fi
+}
 
 # Do ls after cd
 ## Abbreviate if there are lots of files
