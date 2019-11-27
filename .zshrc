@@ -278,6 +278,11 @@ export TERM="xterm-256color"
 # Fix directory stack size
 export DIRSTACKSIZE=100
 
+# Set Custom postfix for liquidprompt
+# See: https://github.com/nojhan/liquidprompt#adding-a-prefixpostfix
+export LP_PS1_POSTFIX="
+> "
+
 # Set other paths
 export MYPYPATH=${HOME}/.config/mypy/stubs/:${MYPYPATH:-}
 
