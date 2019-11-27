@@ -315,6 +315,8 @@ alias cd='HOME=${local_home} cdr'
 alias c='cd'
 alias u='cd ../'
 alias back='pushd'
+## Git
+alias gs='git status'
 ## tmux
 alias t='tmux'
 alias ta='t a'
