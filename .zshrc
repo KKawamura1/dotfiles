@@ -308,6 +308,7 @@ alias vi='vim'
 ## cd
 alias cd='HOME=${local_home} cdr'
 alias c='cd'
+alias cu='cd ../'
 alias back='pushd'
 ## tmux
 alias t='tmux'
