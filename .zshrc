@@ -360,6 +360,29 @@ cd_git_root() {
     fi
 }
 
+# Up while `__init__.py` found
+cd_python_project_root() {
+    local target_relative_path="__init__.py"
+    local tmp_path=$(realpath ./)
+    local final_module_path=
+    while true; do
+        if [[ -e ${tmp_path}/${target_relative_path} ]]; then
+            final_module_path=${tmp_path}
+        fi
+        local parent_path=$(realpath ${tmp_path}/../)
+        if [[ ${tmp_path} == ${parent_path} ]]; then
+            # Root directory
+            break
+        fi
+        tmp_path=${parent_path}
+    done
+    if [[ -z ${final_module_path} ]]; then
+        echo "${target_relative_path} not found in all parents. Maybe not in python project."
+    else
+        cd ${final_module_path}/../
+    fi
+}
+
 # Do ls after cd
 ## Abbreviate if there are lots of files
 ## See: https://qiita.com/yuyuchu3333/items/b10542db482c3ac8b059
