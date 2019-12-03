@@ -346,25 +346,12 @@ alias cmake_debug='cmake -DCMAKE_BUILD_TYPE=Debug'
 
 # ----- Useful function commands -----
 
-# Up until `.git` found
+# Go up to git root
 cd_git_root() {
-    local target_relative_path=".git"
-    local target_path=$(realpath ./)
-    while true; do
-        if [[ -e ${target_path}/${target_relative_path} ]]; then
-            break
-        fi
-        local parent_path=$(realpath ${target_path}/../)
-        if [[ ${target_path} == ${parent_path} ]]; then
-            echo "No ${target_relative_path} file in all parents."
-            return
-        fi
-        target_path=${parent_path}
-    done
-    if [[ ${target_path} == $(realpath ./) ]]; then
-        echo "Already on root directory."
-    else
-        cd ${target_path}
+    local top_level_path
+    top_level_path=$(git rev-parse --show-toplevel)
+    if [[ $? == 0 ]]; then
+        cd ${top_level_path}
     fi
 }
 
