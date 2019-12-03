@@ -5,5 +5,4 @@ zplug_home=
 zplug_packages=
 cuda_root=
 mem_size=
-update_check_mode=
 local_config_file=

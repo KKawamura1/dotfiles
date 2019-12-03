@@ -57,51 +57,13 @@ is_WSL () {
     return 1
 }
 
-# Update check
-update_check () {
-    local mode=$1
-    local -i time_threshold=$2
-    local check_command=$3
-    local time_save_path=$4
-
-    # Mode check
-    if [[ ${mode} == 'NOTHING' ]]; then
-        return
-    elif [[ ${mode} == 'MANUAL' ]]; then
-        :
-    elif [[ ${mode} == 'APT' ]]; then
-        check_command='/usr/lib/update-notifier/apt-check --human-readable'
-    elif [[ ${mode} == 'APT_SAFE' ]]; then
-        check_command='echo $(apt-get -s upgrade | grep ^Inst | wc -l) packages can be upgraded.'
-    elif [[ ${mode} == 'BREW' ]]; then
-        check_command='brew update && brew outdated'
-    else
-        logger_logging 'ERROR' "Invalid update_check_mode ${mode}!"
-        return
-    fi
-
-    # Time check
-    local now_unix_time=$(date +%s)
-    if [[ -f ${time_save_path} ]]; then
-        local last_unix_time=$(cat ${time_save_path})
-        local one_hour=$((60 * 60))
-        local difference_in_hour=$(( (now_unix_time - last_unix_time) / one_hour ))
-        if ((difference_in_hour <= time_threshold)); then
-            return
-        fi
-    fi
-    ## Do update check
-    eval ${check_command}
-    date +%s > ${time_save_path}
-}
-
 # Safe exit
 finalize () {
     # End -u, -e
     set +ue
 
     # Remove local functions
-    unset -f logger_logging logger_continue logger_finished is_WSL update_check
+    unset -f logger_logging logger_continue logger_finished is_WSL
 }
 
 
@@ -195,14 +157,6 @@ mem_size=${mem_size:-}
 ## Type: bool
 ## Default: false
 do_pyenv_init=${do_pyenv_init:-false}
-# Apt update check
-## If set, we check the update every specified time with the given command
-## Type: CheckMode (enum; one of shown below), int (hours), command (to check them in MANUAL check-mode)
-## CheckMode: 'APT', 'APT_SAFE', 'BREW', 'MANUAL', 'NOTHING'
-## Default: NOTHING, 72, 'brew update && brew outdated'
-update_check_mode=${update_check_mode:-'NOTHING'}
-update_check_time=${update_check_time:-72}
-update_check_command=${update_check_command:-'brew update && brew outdated'}
 # Local configuration file
 ## If set, we source it after finishing the default settings
 ## Type: path
@@ -647,10 +601,6 @@ else
 fi
 set -ue
 
-
-# ----- Update check -----
-update_check_path="${local_home}/.update_check_time"
-update_check ${update_check_mode} ${update_check_time} ${update_check_command} ${update_check_path}
 
 # ----- Pyenv settings -----
 if ${do_pyenv_init}; then
