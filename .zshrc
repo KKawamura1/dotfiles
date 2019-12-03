@@ -461,12 +461,19 @@ git-clean-branch() {
 ## See: https://stackoverflow.com/questions/3216360/merge-update-and-pull-git-branches-without-using-checkouts
 #  See also: https://stackoverflow.com/questions/13583231/push-an-unchecked-out-branch
 git-update-origin-master() {
-    # 1. Fetch origin master into local master
-    # 2. Fetch upstream master into local master
-    # 3. Push local master to origin/master
-    git fetch origin master:master && \
-        git fetch upstream master:master && \
-        git push origin master:master
+    if [[ $(git symbolic-ref --short HEAD) == "master" ]]; then
+        # 1. Pull from upstream master
+        # 2. Push to origin master
+        git pull upstream master --ff-only && \
+            git push origin master
+    else
+        # 1. Fetch origin master into local master
+        # 2. Fetch upstream master into local master
+        # 3. Push local master to origin/master
+        git fetch origin master:master && \
+            git fetch upstream master:master && \
+            git push origin master:master
+    fi
 }
 
 # ----- Zsh-specific settings -----
