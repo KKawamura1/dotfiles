@@ -400,7 +400,7 @@ git-clean-branch() {
 
 # Update origin/master to upstream/master
 ## See: https://stackoverflow.com/questions/3216360/merge-update-and-pull-git-branches-without-using-checkouts
-#  See also: https://stackoverflow.com/questions/13583231/push-an-unchecked-out-branch
+## See also: https://stackoverflow.com/questions/13583231/push-an-unchecked-out-branch
 git-update-origin-master() {
     if [[ $(git symbolic-ref --short HEAD) == "master" ]]; then
         # 1. Pull from upstream master
@@ -415,6 +415,20 @@ git-update-origin-master() {
             git fetch upstream master:master && \
             git push origin master:master
     fi
+}
+
+# Create branch from updated master
+git-create-branch() {
+    # Args
+    #    - branch name (str)
+    local branch_name=${1:-}
+    
+    if [[ -z ${branch_name} ]]; then
+        echo "Branch name not specified."
+        return 1
+    fi
+    git-update-origin-master && \
+        git checkout -b ${branch_name} upstream/master
 }
 
 # ----- Zsh-specific settings -----
