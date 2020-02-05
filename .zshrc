@@ -296,6 +296,10 @@ fi
 alias cmake_export='cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1'${cmake_install_options:-}
 alias cmake_release='cmake_export -DCMAKE_BUILD_TYPE=Release'
 alias cmake_debug='cmake -DCMAKE_BUILD_TYPE=Debug'
+## venv
+alias venv-init='python -m venv venv'
+alias venv-activate='source venv/bin/activate'
+alias venv-deactivate='deactivate'
 
 
 # ----- Useful function commands -----
