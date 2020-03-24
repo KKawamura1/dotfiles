@@ -244,7 +244,7 @@ export MYPYPATH=${HOME}/.config/mypy/stubs/:${MYPYPATH:-}
 # ----- Aliases -----
 
 # Global aliases
-alias -g L='| less'
+alias -g L='| less -R'
 alias -g HD='| head'
 alias -g TL='| tail'
 alias -g G='| grep'
@@ -284,7 +284,10 @@ alias mkdir='mkdir -p'
 ## ssh X forwarding
 alias ssh='ssh -X'
 ## Human readable diff
-alias diff='diff -U1'
+alias diff='diff -U0 -up'
+if [[ -x `which colordiff` ]]; then
+  alias diff='colordiff -U0 -up'
+fi
 ## su without environment variables
 alias su='su -l'
 ## Create symlink
