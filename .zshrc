@@ -646,6 +646,7 @@ update_check() {
             logger_logging 'INFO' "${threshold_days} days have passed. Update? (y/N)"
             if read -q; then
                 rm ${last_update_check_file_path} && echo ${now} > ${last_update_check_file_path}
+                echo && echo "brew update && brew upgrade"
                 brew update && brew upgrade
             fi
         fi
