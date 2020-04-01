@@ -307,6 +307,12 @@ alias venv-deactivate='deactivate'
 
 # ----- Useful function commands -----
 
+# Watch with tail
+watch_tail() {
+    local bash_command="${@} | tail -c 1000 | tail -n 10"
+    watch -n 5 "bash -c '${bash_command}'"
+}
+
 # Go up to git root
 cd_git_root() {
     local top_level_path
