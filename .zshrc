@@ -57,13 +57,21 @@ is_WSL () {
     return 1
 }
 
+# Mac or not
+is_mac () {
+    if [[ $(uname) == 'Darwin' ]]; then 
+        return 0
+    fi
+    return 1
+}
+
 # Safe exit
 finalize () {
     # End -u, -e
     set +ue
 
     # Remove local functions
-    unset -f logger_logging logger_continue logger_finished is_WSL
+    unset -f logger_logging logger_continue logger_finished is_WSL is_mac
 }
 
 
@@ -193,18 +201,6 @@ if [[ -d ${cuda_root} ]]; then
     export CPATH=${CUDA_ROOT}/include:${CPATH}
 fi
 
-# Overwrite commands with coreutils
-## See: http://qiita.com/catatsuy/items/50b339ead2571fd3f628
-if [[ $(uname) == 'Darwin' ]]; then
-    coreutils_path=${usr_local}/opt/coreutils
-    if [[ -d ${coreutils_path} ]]; then
-        export PATH=${coreutils_path}/libexec/gnubin:${PATH:-}
-        export MANPATH=${coreutils_path}/libexec/gnuman:${MANPATH:-}
-    else
-        logger_logging 'WARNING' 'You may in MacOS and coreutils not found; consider using `brew install coreutils`.'
-    fi
-fi
-
 # Use brew paths
 ## See: https://qiita.com/noblejasper/items/cc9332cfdd9cf450d744
 ## And for llvm from brew
@@ -239,6 +235,28 @@ export LP_PS1_POSTFIX="
 
 # Set other paths
 export MYPYPATH=${HOME}/.config/mypy/stubs/:${MYPYPATH:-}
+
+
+# ----- Install tools -----
+
+if is_mac; then
+    # Check brew
+    if ! type brew 2>&1 >/dev/null; then
+        logger_logging "WARNING" "brew not found. Install it from https://brew.sh/index_ja ."
+    fi
+    
+    # Use gnu commands
+    # https://yu8mada.com/2018/07/25/install-gnu-commands-on-macos-with-homebrew/
+    for utils in coreutils diffutils findutils grep; do
+        utils_path=${usr_local}/opt/${utils}
+        if [[ ! -d ${utils_path} ]]; then
+            logger_logging "INFO" "${utils} not found. Installing..."
+            brew install ${utils}
+        fi
+        export PATH=${utils_path}/libexec/gnubin:${PATH:-}
+        export MANPATH=${utils_path}/libexec/gnuman:${MANPATH:-}
+    done
+fi
 
 
 # ----- Aliases -----
