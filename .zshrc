@@ -244,6 +244,18 @@ if is_mac; then
     if ! type brew 2>&1 >/dev/null; then
         logger_logging "WARNING" "brew not found. Install it from https://brew.sh/index_ja ."
     fi
+
+    # Install tcl-tk to avoid matplotlib error
+    # https://qiita.com/skyloken/items/a5f839eba1bd79cd5ef9
+    utils_path=${usr_local}/opt/tcl-tk/
+    if [[ ! -d ${utils_path} ]]; then
+        logger_logging "INFO" "tcl-tk not found. Installing..."
+        brew install tcl-tk
+    fi
+    export PATH=${utils_path}/bin:${PATH:-}
+    export LDFLAGS=${utils_path}/lib:${LDFLAGS:-}
+    export CPPFLAGS=${utils_path}/include:${CPPFLAGS:-}
+    export PKG_CONFIG_PATH=${utils_path}/lib/pkgconfig
     
     # Use gnu commands
     # https://yu8mada.com/2018/07/25/install-gnu-commands-on-macos-with-homebrew/
