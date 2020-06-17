@@ -253,8 +253,8 @@ if is_mac; then
         brew install tcl-tk
     fi
     export PATH=${utils_path}/bin:${PATH:-}
-    export LDFLAGS=${utils_path}/lib:${LDFLAGS:-}
-    export CPPFLAGS=${utils_path}/include:${CPPFLAGS:-}
+    export LDFLAGS="-L${utils_path}/lib ${LDFLAGS:-}"
+    export CPPFLAGS="-I${utils_path}/include ${CPPFLAGS:-}"
     export PKG_CONFIG_PATH=${utils_path}/lib/pkgconfig
     
     # Use gnu commands
