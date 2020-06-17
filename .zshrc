@@ -256,6 +256,7 @@ if is_mac; then
     export LDFLAGS="-L${utils_path}/lib ${LDFLAGS:-}"
     export CPPFLAGS="-I${utils_path}/include ${CPPFLAGS:-}"
     export PKG_CONFIG_PATH=${utils_path}/lib/pkgconfig
+    export PYTHON_CONFIGURE_OPTS="--with-tcltk-includes='-I/usr/local/opt/tcl-tk/include' --with-tcltk-libs='-L/usr/local/opt/tcl-tk/lib -ltcl8.6 -ltk8.6'"
     
     # Use gnu commands
     # https://yu8mada.com/2018/07/25/install-gnu-commands-on-macos-with-homebrew/
