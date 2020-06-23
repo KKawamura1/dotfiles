@@ -277,6 +277,7 @@ if type pftaskqueue 2>&1 >/dev/null; then
 
     export PFTQ_REDIS_ADDR="redis-001.mnj.pfn.io:6379"
     pf_taskqueue_setup () {
+        echo "See https://go.pfn.io/redis and type password."
         export PFTQ_REDIS_PASSWORD=$(get_password)
     }
     # 下記はなぜかうまくいかない
