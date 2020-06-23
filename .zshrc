@@ -271,6 +271,17 @@ if is_mac; then
     done
 fi
 
+if type pftaskqueue 2>&1 >/dev/null; then
+    # pftaskqueue settings
+    # See: https://docs.google.com/presentation/d/1GuKwTUS4GvFWuvOcHqDCkOHtKLLN9Lu1zxNHTyrqs2g/edit
+
+    export PFTQ_REDIS_ADDR="redis-001.mnj.pfn.io:6379"
+    pf_taskqueue_setup () {
+        export PFTQ_REDIS_PASSWORD=$(get_password)
+    }
+    # 下記はなぜかうまくいかない
+    . <(pftaskqueue completion zsh)
+fi
 
 # ----- Aliases -----
 
