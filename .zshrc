@@ -497,7 +497,7 @@ retry() {
     local -r cmd="$@"
     local -i attempt_num=1
 
-    until $cmd
+    until eval $cmd
     do
         if (( attempt_num == max_attempts ))
         then
