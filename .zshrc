@@ -487,6 +487,30 @@ git-create-branch() {
         git checkout -b ${branch_name} upstream/master
 }
 
+# Retries a command on failure
+# $1: the max number of attempts
+# $2: wait time in seconds
+# $3...: the command to run
+retry() {
+    local -r -i max_attempts="$1"; shift
+    local -r -i wait_time="$1"; shift
+    local -r cmd="$@"
+    local -i attempt_num=1
+
+    until $cmd
+    do
+        if (( attempt_num == max_attempts ))
+        then
+            echo "Attempt $attempt_num failed and there are no more attempts left!"
+            return 1
+        else
+            echo "Failed. Try again..."
+            attempt_num=$(( attempt_num + 1 ))
+            sleep ${wait_time}
+        fi
+    done
+}
+
 # ----- Zsh-specific settings -----
 
 # Use colors
