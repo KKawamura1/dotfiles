@@ -689,7 +689,7 @@ if [[ -d ${zplug_home} ]]; then
         fi
     fi
     # Load plugins
-    zplug load --verbose
+    zplug load
 else
     logger_logging 'WARNING' 'Cannot find zplug_home in local config file.'
 fi
@@ -702,25 +702,32 @@ if ${do_pyenv_init}; then
     eval "$(pyenv init -)"
 fi
 
-# ----- Check brew update -----
+# ----- Check update -----
 update_check() {
     local last_update_check_file_path="${HOME}/.last_update_check"
     local now=`date +%s`
     local threshold_days=10
-    if type brew 2>&1 >/dev/null; then
-        if [[ ! -e ${last_update_check_file_path} ]]; then
-            echo ${now} > ${last_update_check_file_path}
-        fi
-        local last_update_check=`cat ${last_update_check_file_path}`
-        local time_passed=$(( ${now} - ${last_update_check} ))
-        local info=`eval echo "Past " $(date -ud "@${time_passed}" +'$((%s/3600/24)) days %H hours %M minutes %S seconds') " from the last update."`
-        logger_logging 'INFO' ${info}
-        if (( ${time_passed} > ${threshold_days} * 86400 )); then
-            logger_logging 'INFO' "${threshold_days} days have passed. Update? (y/N)"
-            if read -q; then
-                rm ${last_update_check_file_path} && echo ${now} > ${last_update_check_file_path}
+    if [[ ! -e ${last_update_check_file_path} ]]; then
+        echo ${now} > ${last_update_check_file_path}
+    fi
+    local last_update_check=`cat ${last_update_check_file_path}`
+    local time_passed=$(( ${now} - ${last_update_check} ))
+    local info=`eval echo "Past " $(date -ud "@${time_passed}" +'$((%s/3600/24)) days %H hours %M minutes %S seconds') " from the last update."`
+    logger_logging 'INFO' ${info}
+    if (( ${time_passed} > ${threshold_days} * 86400 )); then
+        logger_logging 'INFO' "${threshold_days} days have passed. Update? (y/N)"
+        if read -q; then
+            rm ${last_update_check_file_path} && echo ${now} > ${last_update_check_file_path}
+            # Brew
+            if type brew 2>&1 >/dev/null; then
                 echo && echo "brew update && brew upgrade"
                 brew update && brew upgrade
+            fi
+            # ZPlug
+            if [[ -d ${zplug_home} ]]; then
+                set +ue
+                zplug update
+                set -ue
             fi
         fi
     fi
