@@ -39,6 +39,9 @@ venv-*/
 *.gch
 .clang-format
 
+# JS
+.eslintcache
+
 # LaTeX
 *.aux
 *.blg
