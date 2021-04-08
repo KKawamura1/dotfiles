@@ -343,8 +343,8 @@ alias cmake_export='cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1'${cmake_install_opti
 alias cmake_release='cmake_export -DCMAKE_BUILD_TYPE=Release'
 alias cmake_debug='cmake -DCMAKE_BUILD_TYPE=Debug'
 ## venv
-alias venv-init='python -m venv venv-$(basename $(pwd))'
-alias venv-activate='source venv-$(basename $(pwd))/bin/activate'
+alias venv-init='mkdir -p ${HOME}/myroot/python-venvs/$(pwd | sed -e "s#/##1" -e "s#/#-#g") 1>/dev/null 2>&1 && python -m venv ${HOME}/myroot/python-venvs/$(pwd | sed -e "s#/##1" -e "s#/#-#g")/venv-$(basename $(pwd))'
+alias venv-activate='source ${HOME}/myroot/python-venvs/$(pwd | sed -e "s#/##1" -e "s#/#-#g")/venv-$(basename $(pwd))/bin/activate'
 alias venv-deactivate='deactivate'
 
 
