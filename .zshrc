@@ -454,22 +454,26 @@ git-clean-branch() {
     git remote prune origin
 }
 
-# Update origin/master to upstream/master
+# Update origin/main to upstream/master
 ## See: https://stackoverflow.com/questions/3216360/merge-update-and-pull-git-branches-without-using-checkouts
 ## See also: https://stackoverflow.com/questions/13583231/push-an-unchecked-out-branch
 git-update-origin-master() {
-    if [[ $(git symbolic-ref --short HEAD) == "master" ]]; then
+    local branch_name="master"
+    if git rev-parse --verify "main" >/dev/null 2>&1; then
+        local branch_name="main"
+    fi
+    if [[ $(git symbolic-ref --short HEAD) == "${branch_name}" ]]; then
         # 1. Pull from upstream master
         # 2. Push to origin master
-        git pull upstream master --ff-only && \
-            git push origin master
+        git pull upstream ${branch_name} --ff-only && \
+            git push origin ${branch_name}
     else
         # 1. Fetch origin master into local master
         # 2. Fetch upstream master into local master
         # 3. Push local master to origin/master
-        git fetch origin master:master && \
-            git fetch upstream master:master && \
-            git push origin master:master
+        git fetch origin ${branch_name}:${branch_name} && \
+            git fetch upstream ${branch_name}:${branch_name} && \
+            git push origin ${branch_name}:${branch_name}
     fi
 }
 
